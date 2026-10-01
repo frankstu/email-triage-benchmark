@@ -29,15 +29,32 @@ METRICS = Path("results/metrics.json")
 BENCH = Path("data/bench/results.jsonl")
 REPO = "github.com/frankstu/email-triage-benchmark"
 
-# Referenzpalette (dataviz): Akzent + Grau, Tinte und Linien in Text-Tokens
-ACCENT = "#2a78d6"
-DEEMPH = "#a9a79f"
-SURFACE = "#fcfcfb"
-INK = "#0b0b0b"
-INK_2 = "#52514e"
-MUTED = "#898781"
-GRID = "#e1e0d9"
-BASELINE = "#c3c2b7"
+# Referenzpalette (dataviz): Akzent + Grau, Tinte und Linien in Text-Tokens.
+# "hell" für LinkedIn, "dunkel" passend zum Blog (Fläche wie dessen Karten).
+THEMES: dict[str, dict[str, str]] = {
+    "hell": {"ACCENT": "#2a78d6", "DEEMPH": "#a9a79f", "SURFACE": "#fcfcfb", "INK": "#0b0b0b",
+             "INK_2": "#52514e", "MUTED": "#898781", "GRID": "#e1e0d9", "BASELINE": "#c3c2b7", "suffix": ""},
+    "dunkel": {"ACCENT": "#3987e5", "DEEMPH": "#6e6e76", "SURFACE": "#121214", "INK": "#f4f4f5",
+               "INK_2": "#b4b4bb", "MUTED": "#8a8a93", "GRID": "#26262b", "BASELINE": "#3a3a40",
+               "suffix": "-dunkel"},
+}
+
+
+class C:  # pylint: disable=too-few-public-methods
+    """Aktives Farbschema; apply_theme() setzt die Werte."""
+    ACCENT = DEEMPH = SURFACE = INK = INK_2 = MUTED = GRID = BASELINE = suffix = ""
+
+
+def apply_theme(name: str) -> None:
+    for key, value in THEMES[name].items():
+        setattr(C, key, value)
+    plt.rcParams.update({
+        "font.family": ["Helvetica Neue", "Helvetica", "Arial", "sans-serif"],
+        "font.size": 12, "axes.edgecolor": C.BASELINE, "axes.labelcolor": C.INK_2,
+        "xtick.color": C.MUTED, "ytick.color": C.INK_2, "figure.facecolor": C.SURFACE,
+        "axes.facecolor": C.SURFACE, "savefig.facecolor": C.SURFACE,
+    })
+
 
 MODELS = (("jev", "JEV 1.13"), ("gpt-6-luna", "GPT-6 Luna"), ("haiku-4.5", "Claude Haiku 4.5"))
 HYBRID_SHOWN = 0.5  # Schwelle, die im Überblick genannt wird
@@ -46,12 +63,6 @@ HYBRID_SHOWN = 0.5  # Schwelle, die im Überblick genannt wird
 ULTRAFAST_ASTRA_USD = (60.0, 300.0)
 DPI = 180
 
-plt.rcParams.update({
-    "font.family": ["Helvetica Neue", "Helvetica", "Arial", "sans-serif"],
-    "font.size": 12, "axes.edgecolor": BASELINE, "axes.labelcolor": INK_2,
-    "xtick.color": MUTED, "ytick.color": INK_2, "figure.facecolor": SURFACE,
-    "axes.facecolor": SURFACE, "savefig.facecolor": SURFACE,
-})
 
 
 def de(value: float, digits: int = 0) -> str:
@@ -60,7 +71,7 @@ def de(value: float, digits: int = 0) -> str:
 
 
 def color(model: str) -> str:
-    return ACCENT if model == "jev" else DEEMPH
+    return C.ACCENT if model == "jev" else C.DEEMPH
 
 
 def _style(ax: Axes, xmax: float) -> None:
@@ -69,10 +80,10 @@ def _style(ax: Axes, xmax: float) -> None:
     ax.invert_yaxis()
     for side in ("top", "right", "left"):
         ax.spines[side].set_visible(False)
-    ax.spines["bottom"].set_color(BASELINE)
+    ax.spines["bottom"].set_color(C.BASELINE)
     ax.tick_params(axis="y", length=0)
-    ax.tick_params(axis="x", length=0, labelsize=10, colors=MUTED)
-    ax.grid(axis="x", color=GRID, linewidth=0.8)
+    ax.tick_params(axis="x", length=0, labelsize=10, colors=C.MUTED)
+    ax.grid(axis="x", color=C.GRID, linewidth=0.8)
     ax.set_axisbelow(True)
 
 
@@ -97,16 +108,16 @@ def _panel(ax: Axes, panel: Panel) -> None:
         end = v
         if panel.whiskers:
             lo, hi = panel.whiskers[row]
-            ax.plot([lo, hi], [row, row], color=INK_2, linewidth=1.2, solid_capstyle="butt")
+            ax.plot([lo, hi], [row, row], color=C.INK_2, linewidth=1.2, solid_capstyle="butt")
             for x in (lo, hi):
-                ax.plot([x, x], [row - 0.09, row + 0.09], color=INK_2, linewidth=1.2)
+                ax.plot([x, x], [row - 0.09, row + 0.09], color=C.INK_2, linewidth=1.2)
             end = max(v, hi)
         ax.text(end + panel.xmax * 0.035, row, panel.labels[row], va="center", ha="left", fontsize=12,
-                color=INK, fontweight="bold" if model == "jev" else "normal")
+                color=C.INK, fontweight="bold" if model == "jev" else "normal")
     ax.set_xticks(list(panel.ticks))
     ax.set_xticklabels([panel.tick_fmt.format(t).replace(".", ",") for t in panel.ticks])
-    ax.set_title(panel.title, loc="left", fontsize=13, fontweight="bold", color=INK, pad=22)
-    ax.text(0, 1.035, panel.note, transform=ax.transAxes, fontsize=10, color=MUTED, va="bottom")
+    ax.set_title(panel.title, loc="left", fontsize=13, fontweight="bold", color=C.INK, pad=22)
+    ax.text(0, 1.035, panel.note, transform=ax.transAxes, fontsize=10, color=C.MUTED, va="bottom")
 
 
 def _numbers(metrics: Mapping[str, object]) -> dict[str, object]:
@@ -142,15 +153,16 @@ def _findings(n: Mapping[str, object]) -> list[tuple[str, str]]:
     ultrafast = (tokens[0] * ULTRAFAST_ASTRA_USD[0] + tokens[1] * ULTRAFAST_ASTRA_USD[1]) / 1_000_000 * 1000
     return [
         (f"Qualität JEV vs. Luna: {sig_text} (McNemar p = {de(p_luna, 2)}). "
-         f"Claude Haiku: signifikant schlechter und {de(cost[2] / cost[0])}× so teuer wie JEV.", INK_2),
+         f"Claude Haiku: signifikant schlechter und {de(cost[2] / cost[0])}× so teuer wie JEV.", C.INK_2),
         (f"Hybrid – JEV entscheidet, unsichere Fälle ({de(100 * hybrid['eskaliert'])} %) gehen an Luna: "
          f"{de(100 * hybrid['genauigkeit']['alle_vier'])} % alle 4 richtig · "
-         f"{de(hybrid['kosten_pro_1000_usd'], 2)} $ pro 1.000 · Ø {de(hybrid['latenz_mittel_ms'])} ms*", INK),
+         f"{de(hybrid['kosten_pro_1000_usd'], 2)} $ pro 1.000 · "
+         f"Ø {de(hybrid['latenz_mittel_ms'])} ms*", C.INK),
         (f"Echtes privates Postfach (300 E-Mails, {de(later)} % davon „später“): "
          f"Haiku {de(100 * real['haiku-4.5']['anteil'])} %, Luna {de(100 * real['gpt-6-luna']['anteil'])} %, "
-         f"JEV {de(100 * real['jev']['anteil'])} % alle 4 richtig.", INK_2),
+         f"JEV {de(100 * real['jev']['anteil'])} % alle 4 richtig.", C.INK_2),
         (f"Zum Vergleich, geschätzt**: OpenAI Ultrafast mit GPT-6 Astra käme auf ca. {de(ultrafast)} $ "
-         f"pro 1.000 E-Mails – rund {de(round(ultrafast / cost[0], -2))}× JEV.", INK_2),
+         f"pro 1.000 E-Mails – rund {de(round(ultrafast / cost[0], -2))}× JEV.", C.INK_2),
     ]
 
 
@@ -164,10 +176,10 @@ def overview(metrics: Mapping[str, object]) -> Path:
     fig = plt.figure(figsize=(12, 7.2), dpi=DPI)
     fig.text(0.04, 0.945, f"JEV sortiert E-Mails so gut wie GPT-6 Luna – {de(latency[1] / latency[0])}× "
              f"schneller und {de(cost[1] / cost[0], 1)}× günstiger", fontsize=21, fontweight="bold",
-             color=INK, va="top")
+             color=C.INK, va="top")
     fig.text(0.04, 0.885, "150 synthetische Geschäfts-E-Mails · je 4 Entscheidungen in einem Aufruf "
              "(Dringlichkeit, Kategorie, Antwort nötig, Phishing) · 2 Durchläufe",
-             fontsize=12, color=INK_2, va="top")
+             fontsize=12, color=C.INK_2, va="top")
 
     grid = fig.add_gridspec(1, 4, left=0.155, right=0.975, top=0.73, bottom=0.38, wspace=0.42)
     axes = [fig.add_subplot(grid[0, i]) for i in range(4)]
@@ -186,20 +198,21 @@ def overview(metrics: Mapping[str, object]) -> Path:
     axes[0].set_yticks(range(len(MODELS)))
     axes[0].set_yticklabels([name for _, name in MODELS], fontsize=13)
     axes[0].get_yticklabels()[0].set_fontweight("bold")
-    axes[0].get_yticklabels()[0].set_color(INK)
+    axes[0].get_yticklabels()[0].set_color(C.INK)
     for ax in axes[1:]:
         ax.set_yticks([])
 
     for i, (text, ink) in enumerate(_findings(n)):
         fig.text(0.04, 0.285 - 0.05 * i, text, fontsize=12, color=ink, va="top",
-                 fontweight="bold" if ink == INK else "normal")
+                 fontweight="bold" if ink == C.INK else "normal")
     fig.text(0.04, 0.06, "Ground Truth: Mehrheit aus GPT-6 Sol, Claude Opus 5.5 und Gemini 3.8 Flash. "
-             "Kosten: gemeldete Tokens × Listenpreise. *Schwelle auf denselben Daten gewählt, eher optimistisch.",
-             fontsize=9.5, color=MUTED, va="top")
+             "Kosten: gemeldete Tokens × Listenpreise. "
+             "*Schwelle auf denselben Daten gewählt, eher optimistisch.",
+             fontsize=9.5, color=C.MUTED, va="top")
     fig.text(0.04, 0.03, f"**Nicht gemessen: Lunas Tokenverbrauch × Ultrafast-Preise (60/300 $ pro Mio.), "
-             f"ohne Denk-Tokens. Code und Daten: {REPO}", fontsize=9.5, color=MUTED, va="top")
+             f"ohne Denk-Tokens. Code und Daten: {REPO}", fontsize=9.5, color=C.MUTED, va="top")
 
-    path = OUT / "ueberblick.png"
+    path = OUT / f"ueberblick{C.suffix}.png"
     fig.savefig(path, dpi=DPI)
     plt.close(fig)
     return path
@@ -209,33 +222,33 @@ def hybrid_chart(metrics: Mapping[str, object]) -> Path:
     syn = metrics["datensaetze"]["synthetisch"]  # type: ignore[index]
     fig, ax = plt.subplots(figsize=(10, 6), dpi=DPI)
     fig.subplots_adjust(left=0.1, right=0.8, top=0.8, bottom=0.14)
-    for fallback, label, ink in (("gpt-6-luna", "JEV → GPT-6 Luna", ACCENT),
-                                 ("haiku-4.5", "JEV → Claude Haiku 4.5", DEEMPH)):
+    for fallback, label, ink in (("gpt-6-luna", "JEV → GPT-6 Luna", C.ACCENT),
+                                 ("haiku-4.5", "JEV → Claude Haiku 4.5", C.DEEMPH)):
         pts = sorted(syn["hybrid"][fallback], key=lambda h: h["eskaliert"])
         xs = [100 * h["eskaliert"] for h in pts]
         ys = [100 * h["genauigkeit"]["alle_vier"] for h in pts]
         ax.plot(xs, ys, color=ink, linewidth=2, solid_joinstyle="round", solid_capstyle="round")
-        ax.scatter(xs, ys, s=40, color=ink, edgecolors=SURFACE, linewidths=2, zorder=3)
-        ax.text(xs[-1] + 1.5, ys[-1], label, va="center", fontsize=12, color=INK)
+        ax.scatter(xs, ys, s=40, color=ink, edgecolors=C.SURFACE, linewidths=2, zorder=3)
+        ax.text(xs[-1] + 1.5, ys[-1], label, va="center", fontsize=12, color=C.INK)
     best = max(syn["hybrid"]["gpt-6-luna"], key=lambda h: h["genauigkeit"]["alle_vier"])
     bx, by = 100 * best["eskaliert"], 100 * best["genauigkeit"]["alle_vier"]
     note = (f"{de(by)} % bei {de(bx)} % Weiterleitung\n"
             f"{de(best['kosten_pro_1000_usd'], 2)} $ pro 1.000 · Ø {de(best['latenz_mittel_ms'])} ms")
     ax.annotate(note, (bx, by), xytext=(bx + 8, by + 5), fontsize=11,
-                color=INK, arrowprops={"arrowstyle": "-", "color": MUTED, "linewidth": 1})
+                color=C.INK, arrowprops={"arrowstyle": "-", "color": C.MUTED, "linewidth": 1})
     for side in ("top", "right"):
         ax.spines[side].set_visible(False)
-    ax.grid(color=GRID, linewidth=0.8)
+    ax.grid(color=C.GRID, linewidth=0.8)
     ax.set_axisbelow(True)
     ax.set_xlim(-2, 102)
     ax.set_ylim(40, 85)
     ax.set_xlabel("Anteil der E-Mails, die an das zweite Modell weitergeleitet werden (%)")
     ax.set_ylabel("Alle 4 Entscheidungen richtig (%)")
     fig.text(0.1, 0.94, "Hybrid: JEV entscheidet, bei Unsicherheit entscheidet ein LLM",
-             fontsize=17, fontweight="bold", color=INK, va="top")
+             fontsize=17, fontweight="bold", color=C.INK, va="top")
     fig.text(0.1, 0.885, "Links nur JEV, rechts nur das zweite Modell · 150 synthetische Geschäfts-E-Mails, "
-             "Lauf 1 · Schwelle auf denselben Daten gewählt", fontsize=11, color=INK_2, va="top")
-    path = OUT / "hybrid.png"
+             "Lauf 1 · Schwelle auf denselben Daten gewählt", fontsize=11, color=C.INK_2, va="top")
+    path = OUT / f"hybrid{C.suffix}.png"
     fig.savefig(path, dpi=DPI)
     plt.close(fig)
     return path
@@ -247,9 +260,9 @@ def latency_chart(rows: Sequence[Mapping[str, object]]) -> Path:
     data = [[float(str(r["latency_ms"])) for r in rows if r["model"] == m and r.get("answer") is not None]
             for m, _ in MODELS]
     parts = ax.boxplot(data, orientation="horizontal", widths=0.42, showfliers=False, patch_artist=True,
-                       medianprops={"color": SURFACE, "linewidth": 2},
-                       whiskerprops={"color": INK_2, "linewidth": 1.2},
-                       capprops={"color": INK_2, "linewidth": 1.2})
+                       medianprops={"color": C.SURFACE, "linewidth": 2},
+                       whiskerprops={"color": C.INK_2, "linewidth": 1.2},
+                       capprops={"color": C.INK_2, "linewidth": 1.2})
     for patch, (model, _) in zip(parts["boxes"], MODELS, strict=True):
         patch.set_facecolor(color(model))
         patch.set_linewidth(0)
@@ -259,17 +272,17 @@ def latency_chart(rows: Sequence[Mapping[str, object]]) -> Path:
     for side in ("top", "right", "left"):
         ax.spines[side].set_visible(False)
     ax.tick_params(axis="y", length=0)
-    ax.grid(axis="x", color=GRID, linewidth=0.8)
+    ax.grid(axis="x", color=C.GRID, linewidth=0.8)
     ax.set_axisbelow(True)
     ax.set_xlim(0, None)
     ax.set_xlabel("Antwortzeit pro E-Mail in ms (Box: mittlere 50 %, Linie: Median, Antennen: 1,5 × IQR)")
     fig.text(0.04, 0.94, "Antwortzeiten: JEV braucht ein Viertel der Zeit",
-             fontsize=17, fontweight="bold", color=INK, va="top")
+             fontsize=17, fontweight="bold", color=C.INK, va="top")
     n = len(data[0])
     fig.text(0.04, 0.875, f"{n} Aufrufe je Modell (150 E-Mails × 2 Läufe), nacheinander gemessen, "
-             "inkl. Netzwerk · Haiku und Luna über Langdock (EU), JEV direkt", fontsize=11, color=INK_2,
+             "inkl. Netzwerk · Haiku und Luna über Langdock (EU), JEV direkt", fontsize=11, color=C.INK_2,
              va="top")
-    path = OUT / "latenz.png"
+    path = OUT / f"latenz{C.suffix}.png"
     fig.savefig(path, dpi=DPI)
     plt.close(fig)
     return path
@@ -278,12 +291,15 @@ def latency_chart(rows: Sequence[Mapping[str, object]]) -> Path:
 def main() -> int:
     OUT.mkdir(parents=True, exist_ok=True)
     metrics = json.loads(METRICS.read_text(encoding="utf-8"))
-    paths = [overview(metrics), hybrid_chart(metrics)]
-    if BENCH.exists():
-        rows = [json.loads(line) for line in BENCH.read_text(encoding="utf-8").split("\n") if line]
-        paths.append(latency_chart([r for r in rows if r["dataset"] == "synthetisch"]))
-    for p in paths:
-        print(p)
+    rows = [json.loads(line) for line in BENCH.read_text(encoding="utf-8").split("\n") if line] \
+        if BENCH.exists() else []
+    for theme in THEMES:
+        apply_theme(theme)
+        paths = [overview(metrics), hybrid_chart(metrics)]
+        if rows:
+            paths.append(latency_chart([r for r in rows if r["dataset"] == "synthetisch"]))
+        for p in paths:
+            print(p)
     return 0
 
 
