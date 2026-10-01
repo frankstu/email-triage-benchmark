@@ -163,7 +163,8 @@
             "mittel": 1062.9
           },
           "kosten_pro_1000_usd": 0.1039,
-          "tokens_in_mittel": 849.1
+          "tokens_in_mittel": 849.1,
+          "tokens_out_mittel": 37.9
         },
         "haiku-4.5": {
           "aufrufe": 600,
@@ -305,7 +306,8 @@
             "mittel": 1141.6
           },
           "kosten_pro_1000_usd": 2.3881,
-          "tokens_in_mittel": 1879.0
+          "tokens_in_mittel": 1879.0,
+          "tokens_out_mittel": 101.8
         },
         "jev": {
           "aufrufe": 600,
@@ -445,7 +447,8 @@
             "mittel": 269.3
           },
           "kosten_pro_1000_usd": 0.0551,
-          "tokens_in_mittel": 1311.8
+          "tokens_in_mittel": 1311.8,
+          "tokens_out_mittel": 165.7
         },
         "jev-de": {
           "aufrufe": 600,
@@ -582,7 +585,8 @@
             "mittel": 270.7
           },
           "kosten_pro_1000_usd": 0.059,
-          "tokens_in_mittel": 1404.8
+          "tokens_in_mittel": 1404.8,
+          "tokens_out_mittel": 165.8
         }
       },
       "hybrid": {
@@ -1094,7 +1098,8 @@
             "mittel": 1099.3
           },
           "kosten_pro_1000_usd": 0.0916,
-          "tokens_in_mittel": 729.9
+          "tokens_in_mittel": 729.9,
+          "tokens_out_mittel": 37.1
         },
         "haiku-4.5": {
           "aufrufe": 300,
@@ -1241,7 +1246,8 @@
             "mittel": 1114.3
           },
           "kosten_pro_1000_usd": 2.2475,
-          "tokens_in_mittel": 1740.1
+          "tokens_in_mittel": 1740.1,
+          "tokens_out_mittel": 101.5
         },
         "jev": {
           "aufrufe": 300,
@@ -1386,7 +1392,8 @@
             "mittel": 266.1
           },
           "kosten_pro_1000_usd": 0.0485,
-          "tokens_in_mittel": 1155.7
+          "tokens_in_mittel": 1155.7,
+          "tokens_out_mittel": 163.5
         },
         "jev-de": {
           "aufrufe": 300,
@@ -1529,7 +1536,8 @@
             "mittel": 264.0
           },
           "kosten_pro_1000_usd": 0.0524,
-          "tokens_in_mittel": 1248.7
+          "tokens_in_mittel": 1248.7,
+          "tokens_out_mittel": 163.6
         }
       },
       "hybrid": {

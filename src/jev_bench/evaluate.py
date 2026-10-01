@@ -123,6 +123,8 @@ def model_metrics(rows: Sequence[Row], truth: Mapping[str, Row]) -> dict[str, ob
         "kosten_pro_1000_usd": round(statistics.mean(costs) * 1000, 4) if costs else None,
         "tokens_in_mittel": (round(statistics.mean(float(str(r["tokens_in"])) for r in valid), 1)
                              if valid else None),
+        "tokens_out_mittel": (round(statistics.mean(float(str(r.get("tokens_out", 0))) for r in valid), 1)
+                              if valid else None),
     }
 
 

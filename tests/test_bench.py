@@ -102,6 +102,7 @@ def test_model_metrics_quality_consistency_latency_cost() -> None:
     assert isinstance(konstanz, dict) and konstanz["alle_felder"] == 0.5
     assert m["latenz_ms"] == {"p50": 10.0, "p95": 10.0, "mittel": 10.0}
     assert m["kosten_pro_1000_usd"] == 1.0
+    assert m["tokens_in_mittel"] == 100.0 and m["tokens_out_mittel"] == 0.0
 
 
 def test_majority_baseline() -> None:

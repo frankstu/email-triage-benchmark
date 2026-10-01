@@ -41,6 +41,9 @@ BASELINE = "#c3c2b7"
 
 MODELS = (("jev", "JEV 1.13"), ("gpt-6-luna", "GPT-6 Luna"), ("haiku-4.5", "Claude Haiku 4.5"))
 HYBRID_SHOWN = 0.5  # Schwelle, die im Überblick genannt wird
+# OpenAI Ultrafast für GPT-6 Astra, $ pro 1 Mio. Tokens (Input, Output), seit 29.09.2026 – nicht gemessen,
+# nur als Schätzung mit Lunas gemessenem Tokenverbrauch
+ULTRAFAST_ASTRA_USD = (60.0, 300.0)
 DPI = 180
 
 plt.rcParams.update({
@@ -124,6 +127,7 @@ def _numbers(metrics: Mapping[str, object]) -> dict[str, object]:
         "hybrid": next(h for h in syn["hybrid"]["gpt-6-luna"] if h["schwelle"] == HYBRID_SHOWN),
         "real": echt["signifikanz"]["alle_vier_lauf1"],
         "later_share": echt["immer_haeufigste_klasse"]["dringlichkeit"],
+        "luna_tokens": (mods["gpt-6-luna"]["tokens_in_mittel"], mods["gpt-6-luna"]["tokens_out_mittel"]),
     }
 
 
@@ -133,6 +137,9 @@ def _findings(n: Mapping[str, object]) -> list[tuple[str, str]]:
     p_luna = float(str(n["p_luna"]))
     sig_text = "kein signifikanter Unterschied" if p_luna >= 0.05 else "signifikanter Unterschied"
     later = 100 * float(str(n["later_share"]))
+    tokens = n["luna_tokens"]
+    assert isinstance(tokens, tuple)
+    ultrafast = (tokens[0] * ULTRAFAST_ASTRA_USD[0] + tokens[1] * ULTRAFAST_ASTRA_USD[1]) / 1_000_000 * 1000
     return [
         (f"Qualität JEV vs. Luna: {sig_text} (McNemar p = {de(p_luna, 2)}). "
          f"Claude Haiku: signifikant schlechter und {de(cost[2] / cost[0])}× so teuer wie JEV.", INK_2),
@@ -142,6 +149,8 @@ def _findings(n: Mapping[str, object]) -> list[tuple[str, str]]:
         (f"Echtes privates Postfach (300 E-Mails, {de(later)} % davon „später“): "
          f"Haiku {de(100 * real['haiku-4.5']['anteil'])} %, Luna {de(100 * real['gpt-6-luna']['anteil'])} %, "
          f"JEV {de(100 * real['jev']['anteil'])} % alle 4 richtig.", INK_2),
+        (f"Zum Vergleich, geschätzt**: OpenAI Ultrafast mit GPT-6 Astra käme auf ca. {de(ultrafast)} $ "
+         f"pro 1.000 E-Mails – rund {de(round(ultrafast / cost[0], -2))}× JEV.", INK_2),
     ]
 
 
@@ -160,7 +169,7 @@ def overview(metrics: Mapping[str, object]) -> Path:
              "(Dringlichkeit, Kategorie, Antwort nötig, Phishing) · 2 Durchläufe",
              fontsize=12, color=INK_2, va="top")
 
-    grid = fig.add_gridspec(1, 4, left=0.155, right=0.975, top=0.73, bottom=0.36, wspace=0.42)
+    grid = fig.add_gridspec(1, 4, left=0.155, right=0.975, top=0.73, bottom=0.38, wspace=0.42)
     axes = [fig.add_subplot(grid[0, i]) for i in range(4)]
     panels = (
         Panel("Qualität", "alle 4 richtig · 95-%-KI", quality, [f"{de(v)} %" for v in quality],
@@ -182,12 +191,13 @@ def overview(metrics: Mapping[str, object]) -> Path:
         ax.set_yticks([])
 
     for i, (text, ink) in enumerate(_findings(n)):
-        fig.text(0.04, 0.255 - 0.055 * i, text, fontsize=12, color=ink, va="top",
+        fig.text(0.04, 0.285 - 0.05 * i, text, fontsize=12, color=ink, va="top",
                  fontweight="bold" if ink == INK else "normal")
     fig.text(0.04, 0.06, "Ground Truth: Mehrheit aus GPT-6 Sol, Claude Opus 5.5 und Gemini 3.8 Flash. "
-             "Kosten aus gemeldeten Tokens zu Listenpreisen.", fontsize=9.5, color=MUTED, va="top")
-    fig.text(0.04, 0.03, f"*Schwelle auf denselben Daten gewählt, daher eher optimistisch. "
-             f"Code, Daten und Methodik: {REPO}", fontsize=9.5, color=MUTED, va="top")
+             "Kosten: gemeldete Tokens × Listenpreise. *Schwelle auf denselben Daten gewählt, eher optimistisch.",
+             fontsize=9.5, color=MUTED, va="top")
+    fig.text(0.04, 0.03, f"**Nicht gemessen: Lunas Tokenverbrauch × Ultrafast-Preise (60/300 $ pro Mio.), "
+             f"ohne Denk-Tokens. Code und Daten: {REPO}", fontsize=9.5, color=MUTED, va="top")
 
     path = OUT / "ueberblick.png"
     fig.savefig(path, dpi=DPI)
