@@ -121,6 +121,21 @@ def consensus(votes: Mapping[str, Mapping[str, object]]) -> dict[str, object]:
     return record
 
 
+def apply_decisions(truth: dict[str, dict[str, object]],
+                    decisions: Mapping[str, Mapping[str, object]]) -> None:
+    """Manuelle Entscheidungen (id -> Feld -> Wert) ersetzen das Prüferergebnis; markiert als 'manuell'."""
+    for email_id, fields in decisions.items():
+        if email_id not in truth:
+            raise SystemExit(f"Entscheidung für unbekannte E-Mail {email_id}")
+        record = truth[email_id]
+        for f, value in fields.items():
+            if f not in FIELDS:
+                raise SystemExit(f"Unbekanntes Feld {f} bei {email_id}")
+            record[f] = value
+        record["offen"] = [f for f in _list(record.get("offen")) if f not in fields]
+        record["manuell"] = sorted(fields)
+
+
 def summarize(results: Sequence[Mapping[str, object]], truth: Mapping[str, Mapping[str, object]],
               judges: Sequence[str]) -> dict[str, object]:
     per_model: dict[str, object] = {}
@@ -175,6 +190,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--max-usd", type=float, default=6.0, help="Kostenbremse (Listenpreise)")
     parser.add_argument("--judges", default=",".join(JUDGES))
+    parser.add_argument("--decisions", type=Path, help="JSON mit manuellen Entscheidungen für offene Felder")
     args = parser.parse_args(argv)
 
     judges = [j.strip() for j in args.judges.split(",") if j.strip()]
@@ -202,6 +218,8 @@ def main(argv: list[str] | None = None) -> int:
     sample_ids = {str(r["id"]) for r in sample}
     answers = latest_answers(results)
     truth = {i: consensus(answers.get(i, {})) for i in sorted(sample_ids)}
+    if args.decisions:
+        apply_decisions(truth, json.loads(args.decisions.read_text(encoding="utf-8")))
     with (args.out_dir / "ground_truth.jsonl").open("w", encoding="utf-8") as fh:
         for i, t in truth.items():
             fh.write(json.dumps({"id": i, **t}, ensure_ascii=False) + "\n")

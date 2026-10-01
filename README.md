@@ -33,12 +33,31 @@ Die Anonymisierung läuft lokal (Regex + spaCy), ohne Netzwerkzugriff.
 
        .venv/bin/python -m jev_bench.review && open data/raw/review.html
 
-4. **Ground Truth** per Mehrheit dreier Prüfer-Modelle (GPT-6 Sol, Claude Opus 5.5,
-   Gemini 3.8 Flash) über Langdock, mit Kostenbremse:
+4. **Synthetische Geschäfts-E-Mails** (150, ausgewogene Klassen inkl. Phishing), reihum
+   geschrieben von GPT-6 Sol, Claude Opus 5.5 und Gemini 3.8 Flash → `data/synthetic/emails.jsonl`:
+
+       .venv/bin/python -m jev_bench.synth --n 150
+
+5. **Ground Truth** per Mehrheit dreier Prüfer-Modelle (GPT-6 Sol, Claude Opus 5.5,
+   Gemini 3.8 Flash) über Langdock, mit Kostenbremse; offene Fälle per Hand
+   (`data/synthetic/manual_decisions.json`):
 
        .venv/bin/python -m jev_bench.label --sample 300 --max-usd 6
+       .venv/bin/python -m jev_bench.label --anon data/synthetic/emails.jsonl \
+           --out-dir data/labels_synth --sample 150 --decisions data/synthetic/manual_decisions.json
 
-5. **Benchmark** der Kandidaten (JEV, Claude Haiku 4.5, GPT-6 Luna) – folgt.
+6. **Benchmark** der Kandidaten – JEV 1.13 (Fragen englisch und deutsch), Claude Haiku 4.5,
+   GPT-6 Luna – in zwei Läufen, je Kandidat sequenziell für saubere Latenzen:
+
+       .venv/bin/python -m jev_bench.bench --runs 2
+
+7. **Auswertung** → `results/metrics.json`, `results/summary.md` (nur Kennzahlen):
+
+       .venv/bin/python -m jev_bench.evaluate
+
+Veröffentlicht sind die synthetischen E-Mails samt Ground Truth und alle Kennzahlen.
+Die echten E-Mails und alles daraus Abgeleitete bleiben lokal. Kosten sind zu
+Listenpreisen der Anbieter aus den gemeldeten Tokens berechnet.
 
 Erreichbarkeit der Modelle prüfen (eine erfundene Test-E-Mail):
 

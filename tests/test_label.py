@@ -8,7 +8,8 @@ from pathlib import Path
 
 import pytest
 
-from jev_bench.label import Budget, consensus, draw_sample, latest_answers, run_judges, summarize
+from jev_bench.label import (Budget, apply_decisions, consensus, draw_sample, latest_answers, run_judges,
+                             summarize)
 from jev_bench.llm import MODELS, ClassifyError, Classifier, ModelSpec, gemini_schema
 from jev_bench.prepare import read_records
 from jev_bench.schema import FIELDS, JSON_SCHEMA
@@ -158,3 +159,14 @@ def test_gemini_schema_conversion() -> None:
     assert props["antwort_noetig"] == {"type": "BOOLEAN"}
     assert props["dringlichkeit"]["enum"] == ["sofort", "bald", "später"]
     assert "additionalProperties" not in g
+
+
+def test_apply_decisions() -> None:
+    truth = {"1": consensus({"x": A, "y": B, "z": C})}
+    apply_decisions(truth, {"1": {"dringlichkeit": "sofort"}})
+    assert truth["1"]["dringlichkeit"] == "sofort"
+    assert truth["1"]["offen"] == ["kategorie"] and truth["1"]["manuell"] == ["dringlichkeit"]
+    with pytest.raises(SystemExit):
+        apply_decisions(truth, {"9": {"dringlichkeit": "bald"}})
+    with pytest.raises(SystemExit):
+        apply_decisions(truth, {"1": {"farbe": "rot"}})

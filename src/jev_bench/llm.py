@@ -16,10 +16,9 @@ import httpx
 import openai
 
 from jev_bench.config import LANGDOCK_BASE, LANGDOCK_REGION
-from jev_bench.schema import FIELDS, INSTRUCTIONS, JSON_SCHEMA, validate
+from jev_bench.schema import INSTRUCTIONS, JSON_SCHEMA, validate
 
 TOOL_NAME = "klassifikation"
-_TOOL_HINT = f"\n\nGib das Ergebnis ausschließlich über das Tool {TOOL_NAME} zurück."
 _GOOGLE_RETRIES = 3
 _GOOGLE_RETRY_STATUS = frozenset({429, 500, 502, 503, 504})
 
@@ -66,32 +65,51 @@ class Result:
     tokens_in: int
     tokens_out: int
     cost_usd: float
+    meta: Mapping[str, object] | None = None  # z. B. Wahrscheinlichkeiten bei JEV
 
     def to_json(self) -> dict[str, object]:
-        return {"model": self.model, "id": self.email_id, "answer": self.answer, "error": self.error,
-                "latency_ms": round(self.latency_ms, 1), "tokens_in": self.tokens_in,
-                "tokens_out": self.tokens_out, "cost_usd": self.cost_usd}
+        data: dict[str, object] = {
+            "model": self.model, "id": self.email_id, "answer": self.answer, "error": self.error,
+            "latency_ms": round(self.latency_ms, 1), "tokens_in": self.tokens_in,
+            "tokens_out": self.tokens_out, "cost_usd": self.cost_usd}
+        if self.meta is not None:
+            data["meta"] = dict(self.meta)
+        return data
 
 
-# Rohaufruf: E-Mail-Text -> (Antwort, Input-Tokens, Output-Tokens)
+# Rohaufruf: Nutzertext -> (JSON-Antwort, Input-Tokens, Output-Tokens)
 RawCall = Callable[[str], tuple[Mapping[str, object], int, int]]
 
 
-def _anthropic_call(spec: ModelSpec, key: str) -> RawCall:
+@dataclass(frozen=True)
+class Task:
+    """Was ein Aufruf liefern soll: Systemprompt plus JSON-Schema der Antwort."""
+    name: str
+    description: str
+    system: str
+    schema: Mapping[str, object]
+    max_tokens: int = 4000  # Opus 5.5 denkt immer mit; das zählt in max_tokens
+
+
+CLASSIFY = Task(TOOL_NAME, "Klassifizierung der E-Mail", INSTRUCTIONS, JSON_SCHEMA)
+
+
+def _anthropic_call(spec: ModelSpec, key: str, task: Task) -> RawCall:
     client = anthropic.Anthropic(base_url=f"{LANGDOCK_BASE}/anthropic/{LANGDOCK_REGION}/", api_key=key)
     forced = bool(spec.options.get("forced_tool"))
-    tool: anthropic.types.ToolParam = {"name": TOOL_NAME, "description": "Klassifizierung der E-Mail",
-                                       "input_schema": JSON_SCHEMA}  # type: ignore[typeddict-item]
+    tool: anthropic.types.ToolParam = {"name": task.name, "description": task.description,
+                                       "input_schema": task.schema}  # type: ignore[typeddict-item]
+    system = f"{task.system}\n\nGib das Ergebnis ausschließlich über das Tool {task.name} zurück."
 
     def call(text: str) -> tuple[Mapping[str, object], int, int]:
         # Langdock reicht output_config.format nicht durch -> Tool-Aufruf mit Schema
         response = client.messages.create(
             model=spec.model_id,
-            max_tokens=4000,  # Opus 5.5 denkt immer mit; das zählt in max_tokens
-            system=INSTRUCTIONS + _TOOL_HINT,
+            max_tokens=task.max_tokens,
+            system=system,
             messages=[{"role": "user", "content": text}],
             tools=[tool],
-            tool_choice={"type": "tool", "name": TOOL_NAME} if forced else {"type": "auto"},
+            tool_choice={"type": "tool", "name": task.name} if forced else {"type": "auto"},
         )
         if response.stop_reason == "refusal":
             raise ClassifyError("refusal")
@@ -103,16 +121,16 @@ def _anthropic_call(spec: ModelSpec, key: str) -> RawCall:
     return call
 
 
-def _openai_call(spec: ModelSpec, key: str) -> RawCall:
+def _openai_call(spec: ModelSpec, key: str, task: Task) -> RawCall:
     client = openai.OpenAI(base_url=f"{LANGDOCK_BASE}/openai/{LANGDOCK_REGION}/v1", api_key=key)
     effort = str(spec.options.get("reasoning_effort", "low"))
 
     def call(text: str) -> tuple[Mapping[str, object], int, int]:
         response = client.chat.completions.create(
             model=spec.model_id,
-            messages=[{"role": "system", "content": INSTRUCTIONS}, {"role": "user", "content": text}],
+            messages=[{"role": "system", "content": task.system}, {"role": "user", "content": text}],
             response_format={"type": "json_schema", "json_schema": {
-                "name": TOOL_NAME, "strict": True, "schema": JSON_SCHEMA}},
+                "name": task.name, "strict": True, "schema": dict(task.schema)}},
             reasoning_effort=effort,  # type: ignore[arg-type]  # erlaubte Werte je nach Modell
         )
         content = response.choices[0].message.content
@@ -133,18 +151,18 @@ def gemini_schema(schema: Mapping[str, object]) -> dict[str, object]:
         "type": "OBJECT",
         "properties": {k: {"type": str(v["type"]).upper(), **({"enum": v["enum"]} if "enum" in v else {})}
                        for k, v in props.items()},
-        "required": list(FIELDS),
-        "propertyOrdering": list(FIELDS),
+        "required": schema["required"],
+        "propertyOrdering": list(props),
     }
 
 
-def _google_call(spec: ModelSpec, key: str) -> RawCall:
+def _google_call(spec: ModelSpec, key: str, task: Task) -> RawCall:
     url = f"{LANGDOCK_BASE}/google/{LANGDOCK_REGION}/v1beta/models/{spec.model_id}:generateContent"
     client = httpx.Client(headers={"Authorization": f"Bearer {key}"}, timeout=120)
-    config = {"responseMimeType": "application/json", "responseSchema": gemini_schema(JSON_SCHEMA)}
+    config = {"responseMimeType": "application/json", "responseSchema": gemini_schema(task.schema)}
 
     def call(text: str) -> tuple[Mapping[str, object], int, int]:
-        body = {"systemInstruction": {"parts": [{"text": INSTRUCTIONS}]},
+        body = {"systemInstruction": {"parts": [{"text": task.system}]},
                 "contents": [{"role": "user", "parts": [{"text": text}]}],
                 "generationConfig": config}
         r = client.post(url, json=body)
@@ -177,9 +195,13 @@ def _parse_json(content: str) -> Mapping[str, object]:
     return answer
 
 
-_FACTORIES: dict[str, Callable[[ModelSpec, str], RawCall]] = {
+_FACTORIES: dict[str, Callable[[ModelSpec, str, Task], RawCall]] = {
     "anthropic": _anthropic_call, "openai": _openai_call, "google": _google_call,
 }
+
+
+def make_raw_call(spec: ModelSpec, key: str, task: Task) -> RawCall:
+    return _FACTORIES[spec.provider](spec, key, task)
 
 API_ERRORS = (anthropic.APIError, openai.APIError, httpx.HTTPError)
 
@@ -187,7 +209,7 @@ API_ERRORS = (anthropic.APIError, openai.APIError, httpx.HTTPError)
 class Classifier:
     def __init__(self, spec: ModelSpec, key: str, raw_call: RawCall | None = None) -> None:
         self.spec = spec
-        self._call = raw_call or _FACTORIES[spec.provider](spec, key)
+        self._call = raw_call or make_raw_call(spec, key, CLASSIFY)
 
     def classify(self, email_id: str, text: str) -> Result:
         started = time.perf_counter()

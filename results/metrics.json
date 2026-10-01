@@ -1,0 +1,1943 @@
+{
+  "datensaetze": {
+    "echt": {
+      "emails": 300,
+      "verteilung": {
+        "dringlichkeit": {
+          "\"später\"": 288,
+          "\"bald\"": 8,
+          "\"sofort\"": 4
+        },
+        "kategorie": {
+          "\"newsletter_werbung\"": 221,
+          "\"persönlich\"": 2,
+          "\"rechnung_finanzen\"": 6,
+          "\"sonstiges\"": 3,
+          "\"termin\"": 10,
+          "\"benachrichtigung\"": 58
+        },
+        "antwort_noetig": {
+          "false": 297,
+          "true": 3
+        },
+        "phishing_verdacht": {
+          "false": 300
+        }
+      },
+      "immer_haeufigste_klasse": {
+        "dringlichkeit": 0.96,
+        "kategorie": 0.7367,
+        "antwort_noetig": 0.99,
+        "phishing_verdacht": 1.0
+      },
+      "modelle": {
+        "gpt-6-luna": {
+          "aufrufe": 600,
+          "ungueltig": 0,
+          "fehlerarten": {},
+          "felder": {
+            "dringlichkeit": {
+              "n": 600,
+              "accuracy": 0.975,
+              "macro_f1": 0.8892,
+              "recall": {
+                "\"sofort\"": 1.0,
+                "\"bald\"": 1.0,
+                "\"später\"": 0.974
+              },
+              "precision": {
+                "\"sofort\"": 1.0,
+                "\"bald\"": 0.5161,
+                "\"später\"": 1.0
+              },
+              "confusion": {
+                "\"später\"": {
+                  "\"später\"": 561,
+                  "\"bald\"": 15
+                },
+                "\"bald\"": {
+                  "\"bald\"": 16
+                },
+                "\"sofort\"": {
+                  "\"sofort\"": 8
+                }
+              }
+            },
+            "kategorie": {
+              "n": 600,
+              "accuracy": 0.84,
+              "macro_f1": 0.7195,
+              "recall": {
+                "\"persönlich\"": 0.75,
+                "\"termin\"": 0.7,
+                "\"rechnung_finanzen\"": 1.0,
+                "\"benachrichtigung\"": 0.25,
+                "\"newsletter_werbung\"": 1.0,
+                "\"sonstiges\"": 0.6667
+              },
+              "precision": {
+                "\"persönlich\"": 0.3333,
+                "\"termin\"": 1.0,
+                "\"rechnung_finanzen\"": 1.0,
+                "\"benachrichtigung\"": 0.9355,
+                "\"newsletter_werbung\"": 0.8355,
+                "\"sonstiges\"": 0.8
+              },
+              "confusion": {
+                "\"newsletter_werbung\"": {
+                  "\"newsletter_werbung\"": 442
+                },
+                "\"persönlich\"": {
+                  "\"sonstiges\"": 1,
+                  "\"persönlich\"": 3
+                },
+                "\"rechnung_finanzen\"": {
+                  "\"rechnung_finanzen\"": 12
+                },
+                "\"sonstiges\"": {
+                  "\"persönlich\"": 2,
+                  "\"sonstiges\"": 4
+                },
+                "\"termin\"": {
+                  "\"termin\"": 14,
+                  "\"persönlich\"": 4,
+                  "\"benachrichtigung\"": 2
+                },
+                "\"benachrichtigung\"": {
+                  "\"benachrichtigung\"": 29,
+                  "\"newsletter_werbung\"": 87
+                }
+              }
+            },
+            "antwort_noetig": {
+              "n": 600,
+              "accuracy": 1.0,
+              "macro_f1": 1.0,
+              "recall": {
+                "true": 1.0,
+                "false": 1.0
+              },
+              "precision": {
+                "true": 1.0,
+                "false": 1.0
+              },
+              "confusion": {
+                "false": {
+                  "false": 594
+                },
+                "true": {
+                  "true": 6
+                }
+              }
+            },
+            "phishing_verdacht": {
+              "n": 600,
+              "accuracy": 1.0,
+              "macro_f1": 1.0,
+              "recall": {
+                "true": null,
+                "false": 1.0
+              },
+              "precision": {
+                "true": null,
+                "false": 1.0
+              },
+              "confusion": {
+                "false": {
+                  "false": 600
+                }
+              }
+            }
+          },
+          "alle_vier_richtig": 0.815,
+          "konstanz": {
+            "dringlichkeit": 0.9967,
+            "kategorie": 0.9933,
+            "antwort_noetig": 1.0,
+            "phishing_verdacht": 1.0,
+            "alle_felder": 0.99
+          },
+          "latenz_ms": {
+            "p50": 985.4,
+            "p95": 1530.9,
+            "mittel": 1062.9
+          },
+          "kosten_pro_1000_usd": 0.1039,
+          "tokens_in_mittel": 849.1
+        },
+        "haiku-4.5": {
+          "aufrufe": 600,
+          "ungueltig": 0,
+          "fehlerarten": {},
+          "felder": {
+            "dringlichkeit": {
+              "n": 600,
+              "accuracy": 0.965,
+              "macro_f1": 0.7235,
+              "recall": {
+                "\"sofort\"": 0.75,
+                "\"bald\"": 0.75,
+                "\"später\"": 0.974
+              },
+              "precision": {
+                "\"sofort\"": 0.5,
+                "\"bald\"": 0.48,
+                "\"später\"": 0.9964
+              },
+              "confusion": {
+                "\"später\"": {
+                  "\"später\"": 561,
+                  "\"sofort\"": 4,
+                  "\"bald\"": 11
+                },
+                "\"bald\"": {
+                  "\"bald\"": 12,
+                  "\"später\"": 2,
+                  "\"sofort\"": 2
+                },
+                "\"sofort\"": {
+                  "\"bald\"": 2,
+                  "\"sofort\"": 6
+                }
+              }
+            },
+            "kategorie": {
+              "n": 600,
+              "accuracy": 0.9283,
+              "macro_f1": 0.7591,
+              "recall": {
+                "\"persönlich\"": 0.5,
+                "\"termin\"": 0.8,
+                "\"rechnung_finanzen\"": 0.8333,
+                "\"benachrichtigung\"": 0.7328,
+                "\"newsletter_werbung\"": 0.9977,
+                "\"sonstiges\"": 0.5
+              },
+              "precision": {
+                "\"persönlich\"": 0.5,
+                "\"termin\"": 1.0,
+                "\"rechnung_finanzen\"": 1.0,
+                "\"benachrichtigung\"": 0.9659,
+                "\"newsletter_werbung\"": 0.9284,
+                "\"sonstiges\"": 0.4286
+              },
+              "confusion": {
+                "\"newsletter_werbung\"": {
+                  "\"newsletter_werbung\"": 441,
+                  "\"benachrichtigung\"": 1
+                },
+                "\"persönlich\"": {
+                  "\"sonstiges\"": 2,
+                  "\"persönlich\"": 2
+                },
+                "\"rechnung_finanzen\"": {
+                  "\"rechnung_finanzen\"": 10,
+                  "\"sonstiges\"": 2
+                },
+                "\"sonstiges\"": {
+                  "\"newsletter_werbung\"": 3,
+                  "\"sonstiges\"": 3
+                },
+                "\"termin\"": {
+                  "\"termin\"": 16,
+                  "\"persönlich\"": 2,
+                  "\"benachrichtigung\"": 2
+                },
+                "\"benachrichtigung\"": {
+                  "\"benachrichtigung\"": 85,
+                  "\"newsletter_werbung\"": 31
+                }
+              }
+            },
+            "antwort_noetig": {
+              "n": 600,
+              "accuracy": 0.9967,
+              "macro_f1": 0.9277,
+              "recall": {
+                "true": 1.0,
+                "false": 0.9966
+              },
+              "precision": {
+                "true": 0.75,
+                "false": 1.0
+              },
+              "confusion": {
+                "false": {
+                  "false": 592,
+                  "true": 2
+                },
+                "true": {
+                  "true": 6
+                }
+              }
+            },
+            "phishing_verdacht": {
+              "n": 600,
+              "accuracy": 0.9917,
+              "macro_f1": 0.9958,
+              "recall": {
+                "true": null,
+                "false": 0.9917
+              },
+              "precision": {
+                "true": 0.0,
+                "false": 1.0
+              },
+              "confusion": {
+                "false": {
+                  "false": 595,
+                  "true": 5
+                }
+              }
+            }
+          },
+          "alle_vier_richtig": 0.885,
+          "konstanz": {
+            "dringlichkeit": 0.9767,
+            "kategorie": 0.9367,
+            "antwort_noetig": 1.0,
+            "phishing_verdacht": 0.9967,
+            "alle_felder": 0.91
+          },
+          "latenz_ms": {
+            "p50": 1116.2,
+            "p95": 1403.3,
+            "mittel": 1141.6
+          },
+          "kosten_pro_1000_usd": 2.3881,
+          "tokens_in_mittel": 1879.0
+        },
+        "jev": {
+          "aufrufe": 600,
+          "ungueltig": 0,
+          "fehlerarten": {},
+          "felder": {
+            "dringlichkeit": {
+              "n": 600,
+              "accuracy": 0.95,
+              "macro_f1": 0.6277,
+              "recall": {
+                "\"sofort\"": 0.5,
+                "\"bald\"": 0.75,
+                "\"später\"": 0.9618
+              },
+              "precision": {
+                "\"sofort\"": 0.2667,
+                "\"bald\"": 0.4444,
+                "\"später\"": 0.9928
+              },
+              "confusion": {
+                "\"später\"": {
+                  "\"später\"": 554,
+                  "\"bald\"": 13,
+                  "\"sofort\"": 9
+                },
+                "\"bald\"": {
+                  "\"bald\"": 12,
+                  "\"sofort\"": 2,
+                  "\"später\"": 2
+                },
+                "\"sofort\"": {
+                  "\"später\"": 2,
+                  "\"bald\"": 2,
+                  "\"sofort\"": 4
+                }
+              }
+            },
+            "kategorie": {
+              "n": 600,
+              "accuracy": 0.8783,
+              "macro_f1": 0.8371,
+              "recall": {
+                "\"persönlich\"": 1.0,
+                "\"termin\"": 0.9,
+                "\"rechnung_finanzen\"": 0.8333,
+                "\"benachrichtigung\"": 0.4052,
+                "\"newsletter_werbung\"": 1.0,
+                "\"sonstiges\"": 1.0
+              },
+              "precision": {
+                "\"persönlich\"": 0.5,
+                "\"termin\"": 1.0,
+                "\"rechnung_finanzen\"": 1.0,
+                "\"benachrichtigung\"": 0.9592,
+                "\"newsletter_werbung\"": 0.8684,
+                "\"sonstiges\"": 1.0
+              },
+              "confusion": {
+                "\"newsletter_werbung\"": {
+                  "\"newsletter_werbung\"": 442
+                },
+                "\"persönlich\"": {
+                  "\"persönlich\"": 4
+                },
+                "\"rechnung_finanzen\"": {
+                  "\"rechnung_finanzen\"": 10,
+                  "\"persönlich\"": 2
+                },
+                "\"sonstiges\"": {
+                  "\"sonstiges\"": 6
+                },
+                "\"termin\"": {
+                  "\"termin\"": 18,
+                  "\"benachrichtigung\"": 2
+                },
+                "\"benachrichtigung\"": {
+                  "\"benachrichtigung\"": 47,
+                  "\"newsletter_werbung\"": 67,
+                  "\"persönlich\"": 2
+                }
+              }
+            },
+            "antwort_noetig": {
+              "n": 600,
+              "accuracy": 0.975,
+              "macro_f1": 0.7158,
+              "recall": {
+                "true": 1.0,
+                "false": 0.9747
+              },
+              "precision": {
+                "true": 0.2857,
+                "false": 1.0
+              },
+              "confusion": {
+                "false": {
+                  "false": 579,
+                  "true": 15
+                },
+                "true": {
+                  "true": 6
+                }
+              }
+            },
+            "phishing_verdacht": {
+              "n": 600,
+              "accuracy": 0.9767,
+              "macro_f1": 0.9882,
+              "recall": {
+                "true": null,
+                "false": 0.9767
+              },
+              "precision": {
+                "true": 0.0,
+                "false": 1.0
+              },
+              "confusion": {
+                "false": {
+                  "false": 586,
+                  "true": 14
+                }
+              }
+            }
+          },
+          "alle_vier_richtig": 0.7983,
+          "konstanz": {
+            "dringlichkeit": 0.9933,
+            "kategorie": 0.9967,
+            "antwort_noetig": 0.9967,
+            "phishing_verdacht": 1.0,
+            "alle_felder": 0.9867
+          },
+          "latenz_ms": {
+            "p50": 259.1,
+            "p95": 361.6,
+            "mittel": 269.3
+          },
+          "kosten_pro_1000_usd": 0.0551,
+          "tokens_in_mittel": 1311.8
+        },
+        "jev-de": {
+          "aufrufe": 600,
+          "ungueltig": 0,
+          "fehlerarten": {},
+          "felder": {
+            "dringlichkeit": {
+              "n": 600,
+              "accuracy": 0.9667,
+              "macro_f1": 0.7532,
+              "recall": {
+                "\"sofort\"": 0.5,
+                "\"bald\"": 0.875,
+                "\"später\"": 0.9757
+              },
+              "precision": {
+                "\"sofort\"": 1.0,
+                "\"bald\"": 0.4667,
+                "\"später\"": 0.9929
+              },
+              "confusion": {
+                "\"später\"": {
+                  "\"später\"": 562,
+                  "\"bald\"": 14
+                },
+                "\"bald\"": {
+                  "\"bald\"": 14,
+                  "\"später\"": 2
+                },
+                "\"sofort\"": {
+                  "\"später\"": 2,
+                  "\"bald\"": 2,
+                  "\"sofort\"": 4
+                }
+              }
+            },
+            "kategorie": {
+              "n": 600,
+              "accuracy": 0.885,
+              "macro_f1": 0.8653,
+              "recall": {
+                "\"persönlich\"": 1.0,
+                "\"termin\"": 0.9,
+                "\"rechnung_finanzen\"": 0.8333,
+                "\"benachrichtigung\"": 0.4397,
+                "\"newsletter_werbung\"": 1.0,
+                "\"sonstiges\"": 1.0
+              },
+              "precision": {
+                "\"persönlich\"": 0.6667,
+                "\"termin\"": 1.0,
+                "\"rechnung_finanzen\"": 1.0,
+                "\"benachrichtigung\"": 0.9623,
+                "\"newsletter_werbung\"": 0.8718,
+                "\"sonstiges\"": 1.0
+              },
+              "confusion": {
+                "\"newsletter_werbung\"": {
+                  "\"newsletter_werbung\"": 442
+                },
+                "\"persönlich\"": {
+                  "\"persönlich\"": 4
+                },
+                "\"rechnung_finanzen\"": {
+                  "\"rechnung_finanzen\"": 10,
+                  "\"persönlich\"": 2
+                },
+                "\"sonstiges\"": {
+                  "\"sonstiges\"": 6
+                },
+                "\"termin\"": {
+                  "\"termin\"": 18,
+                  "\"benachrichtigung\"": 2
+                },
+                "\"benachrichtigung\"": {
+                  "\"benachrichtigung\"": 51,
+                  "\"newsletter_werbung\"": 65
+                }
+              }
+            },
+            "antwort_noetig": {
+              "n": 600,
+              "accuracy": 0.9633,
+              "macro_f1": 0.6671,
+              "recall": {
+                "true": 1.0,
+                "false": 0.963
+              },
+              "precision": {
+                "true": 0.2143,
+                "false": 1.0
+              },
+              "confusion": {
+                "false": {
+                  "false": 572,
+                  "true": 22
+                },
+                "true": {
+                  "true": 6
+                }
+              }
+            },
+            "phishing_verdacht": {
+              "n": 600,
+              "accuracy": 0.9733,
+              "macro_f1": 0.9865,
+              "recall": {
+                "true": null,
+                "false": 0.9733
+              },
+              "precision": {
+                "true": 0.0,
+                "false": 1.0
+              },
+              "confusion": {
+                "false": {
+                  "false": 584,
+                  "true": 16
+                }
+              }
+            }
+          },
+          "alle_vier_richtig": 0.81,
+          "konstanz": {
+            "dringlichkeit": 1.0,
+            "kategorie": 0.99,
+            "antwort_noetig": 1.0,
+            "phishing_verdacht": 0.9933,
+            "alle_felder": 0.9833
+          },
+          "latenz_ms": {
+            "p50": 261.2,
+            "p95": 363.8,
+            "mittel": 270.7
+          },
+          "kosten_pro_1000_usd": 0.059,
+          "tokens_in_mittel": 1404.8
+        }
+      },
+      "hybrid": {
+        "gpt-6-luna": [
+          {
+            "schwelle": 0.0,
+            "n": 300,
+            "eskaliert": 0.0,
+            "genauigkeit": {
+              "dringlichkeit": 0.9467,
+              "kategorie": 0.88,
+              "antwort_noetig": 0.9733,
+              "phishing_verdacht": 0.9767,
+              "alle_vier": 0.7967
+            },
+            "kosten_pro_1000_usd": 0.0551,
+            "latenz_mittel_ms": 268.8
+          },
+          {
+            "schwelle": 0.3,
+            "n": 300,
+            "eskaliert": 0.1167,
+            "genauigkeit": {
+              "dringlichkeit": 0.95,
+              "kategorie": 0.88,
+              "antwort_noetig": 0.9933,
+              "phishing_verdacht": 0.9933,
+              "alle_vier": 0.82
+            },
+            "kosten_pro_1000_usd": 0.0665,
+            "latenz_mittel_ms": 388.3
+          },
+          {
+            "schwelle": 0.5,
+            "n": 300,
+            "eskaliert": 0.3467,
+            "genauigkeit": {
+              "dringlichkeit": 0.9733,
+              "kategorie": 0.84,
+              "antwort_noetig": 0.9967,
+              "phishing_verdacht": 0.9967,
+              "alle_vier": 0.81
+            },
+            "kosten_pro_1000_usd": 0.0901,
+            "latenz_mittel_ms": 619.0
+          },
+          {
+            "schwelle": 0.6,
+            "n": 300,
+            "eskaliert": 0.5067,
+            "genauigkeit": {
+              "dringlichkeit": 0.9733,
+              "kategorie": 0.84,
+              "antwort_noetig": 0.9967,
+              "phishing_verdacht": 0.9967,
+              "alle_vier": 0.81
+            },
+            "kosten_pro_1000_usd": 0.1077,
+            "latenz_mittel_ms": 797.2
+          },
+          {
+            "schwelle": 0.7,
+            "n": 300,
+            "eskaliert": 0.6233,
+            "genauigkeit": {
+              "dringlichkeit": 0.9733,
+              "kategorie": 0.84,
+              "antwort_noetig": 0.9967,
+              "phishing_verdacht": 1.0,
+              "alle_vier": 0.81
+            },
+            "kosten_pro_1000_usd": 0.1205,
+            "latenz_mittel_ms": 932.3
+          },
+          {
+            "schwelle": 0.8,
+            "n": 300,
+            "eskaliert": 0.8133,
+            "genauigkeit": {
+              "dringlichkeit": 0.9733,
+              "kategorie": 0.8367,
+              "antwort_noetig": 1.0,
+              "phishing_verdacht": 1.0,
+              "alle_vier": 0.81
+            },
+            "kosten_pro_1000_usd": 0.1412,
+            "latenz_mittel_ms": 1125.3
+          },
+          {
+            "schwelle": 0.9,
+            "n": 300,
+            "eskaliert": 1.0,
+            "genauigkeit": {
+              "dringlichkeit": 0.9733,
+              "kategorie": 0.8367,
+              "antwort_noetig": 1.0,
+              "phishing_verdacht": 1.0,
+              "alle_vier": 0.81
+            },
+            "kosten_pro_1000_usd": 0.159,
+            "latenz_mittel_ms": 1311.4
+          },
+          {
+            "schwelle": 0.95,
+            "n": 300,
+            "eskaliert": 1.0,
+            "genauigkeit": {
+              "dringlichkeit": 0.9733,
+              "kategorie": 0.8367,
+              "antwort_noetig": 1.0,
+              "phishing_verdacht": 1.0,
+              "alle_vier": 0.81
+            },
+            "kosten_pro_1000_usd": 0.159,
+            "latenz_mittel_ms": 1311.4
+          },
+          {
+            "schwelle": 1.01,
+            "n": 300,
+            "eskaliert": 1.0,
+            "genauigkeit": {
+              "dringlichkeit": 0.9733,
+              "kategorie": 0.8367,
+              "antwort_noetig": 1.0,
+              "phishing_verdacht": 1.0,
+              "alle_vier": 0.81
+            },
+            "kosten_pro_1000_usd": 0.159,
+            "latenz_mittel_ms": 1311.4
+          }
+        ],
+        "haiku-4.5": [
+          {
+            "schwelle": 0.0,
+            "n": 300,
+            "eskaliert": 0.0,
+            "genauigkeit": {
+              "dringlichkeit": 0.9467,
+              "kategorie": 0.88,
+              "antwort_noetig": 0.9733,
+              "phishing_verdacht": 0.9767,
+              "alle_vier": 0.7967
+            },
+            "kosten_pro_1000_usd": 0.0551,
+            "latenz_mittel_ms": 268.8
+          },
+          {
+            "schwelle": 0.3,
+            "n": 300,
+            "eskaliert": 0.1167,
+            "genauigkeit": {
+              "dringlichkeit": 0.96,
+              "kategorie": 0.89,
+              "antwort_noetig": 0.9933,
+              "phishing_verdacht": 0.99,
+              "alle_vier": 0.8367
+            },
+            "kosten_pro_1000_usd": 0.325,
+            "latenz_mittel_ms": 399.1
+          },
+          {
+            "schwelle": 0.5,
+            "n": 300,
+            "eskaliert": 0.3467,
+            "genauigkeit": {
+              "dringlichkeit": 0.9767,
+              "kategorie": 0.88,
+              "antwort_noetig": 0.9967,
+              "phishing_verdacht": 0.9867,
+              "alle_vier": 0.8433
+            },
+            "kosten_pro_1000_usd": 0.869,
+            "latenz_mittel_ms": 652.5
+          },
+          {
+            "schwelle": 0.6,
+            "n": 300,
+            "eskaliert": 0.5067,
+            "genauigkeit": {
+              "dringlichkeit": 0.9733,
+              "kategorie": 0.9,
+              "antwort_noetig": 0.9967,
+              "phishing_verdacht": 0.9867,
+              "alle_vier": 0.86
+            },
+            "kosten_pro_1000_usd": 1.2665,
+            "latenz_mittel_ms": 850.5
+          },
+          {
+            "schwelle": 0.7,
+            "n": 300,
+            "eskaliert": 0.6233,
+            "genauigkeit": {
+              "dringlichkeit": 0.9733,
+              "kategorie": 0.93,
+              "antwort_noetig": 0.9967,
+              "phishing_verdacht": 0.99,
+              "alle_vier": 0.89
+            },
+            "kosten_pro_1000_usd": 1.5567,
+            "latenz_mittel_ms": 980.5
+          },
+          {
+            "schwelle": 0.8,
+            "n": 300,
+            "eskaliert": 0.8133,
+            "genauigkeit": {
+              "dringlichkeit": 0.97,
+              "kategorie": 0.9267,
+              "antwort_noetig": 0.9967,
+              "phishing_verdacht": 0.99,
+              "alle_vier": 0.8867
+            },
+            "kosten_pro_1000_usd": 2.0261,
+            "latenz_mittel_ms": 1195.7
+          },
+          {
+            "schwelle": 0.9,
+            "n": 300,
+            "eskaliert": 1.0,
+            "genauigkeit": {
+              "dringlichkeit": 0.97,
+              "kategorie": 0.9267,
+              "antwort_noetig": 0.9967,
+              "phishing_verdacht": 0.99,
+              "alle_vier": 0.8867
+            },
+            "kosten_pro_1000_usd": 2.4432,
+            "latenz_mittel_ms": 1399.2
+          },
+          {
+            "schwelle": 0.95,
+            "n": 300,
+            "eskaliert": 1.0,
+            "genauigkeit": {
+              "dringlichkeit": 0.97,
+              "kategorie": 0.9267,
+              "antwort_noetig": 0.9967,
+              "phishing_verdacht": 0.99,
+              "alle_vier": 0.8867
+            },
+            "kosten_pro_1000_usd": 2.4432,
+            "latenz_mittel_ms": 1399.2
+          },
+          {
+            "schwelle": 1.01,
+            "n": 300,
+            "eskaliert": 1.0,
+            "genauigkeit": {
+              "dringlichkeit": 0.97,
+              "kategorie": 0.9267,
+              "antwort_noetig": 0.9967,
+              "phishing_verdacht": 0.99,
+              "alle_vier": 0.8867
+            },
+            "kosten_pro_1000_usd": 2.4432,
+            "latenz_mittel_ms": 1399.2
+          }
+        ]
+      },
+      "signifikanz": {
+        "alle_vier_lauf1": {
+          "gpt-6-luna": {
+            "k": 243,
+            "n": 300,
+            "anteil": 0.81,
+            "ki95": [
+              0.7618,
+              0.8504
+            ]
+          },
+          "haiku-4.5": {
+            "k": 266,
+            "n": 300,
+            "anteil": 0.8867,
+            "ki95": [
+              0.8458,
+              0.9178
+            ]
+          },
+          "jev": {
+            "k": 239,
+            "n": 300,
+            "anteil": 0.7967,
+            "ki95": [
+              0.7475,
+              0.8383
+            ]
+          },
+          "jev-de": {
+            "k": 242,
+            "n": 300,
+            "anteil": 0.8067,
+            "ki95": [
+              0.7582,
+              0.8474
+            ]
+          }
+        },
+        "mcnemar": {
+          "gpt-6-luna vs haiku-4.5": {
+            "nur_a": 10,
+            "nur_b": 33,
+            "p": 0.0006
+          },
+          "gpt-6-luna vs jev": {
+            "nur_a": 23,
+            "nur_b": 19,
+            "p": 0.644
+          },
+          "gpt-6-luna vs jev-de": {
+            "nur_a": 20,
+            "nur_b": 19,
+            "p": 1.0
+          },
+          "haiku-4.5 vs jev": {
+            "nur_a": 37,
+            "nur_b": 10,
+            "p": 0.0001
+          },
+          "haiku-4.5 vs jev-de": {
+            "nur_a": 34,
+            "nur_b": 10,
+            "p": 0.0004
+          },
+          "jev vs jev-de": {
+            "nur_a": 7,
+            "nur_b": 10,
+            "p": 0.6291
+          }
+        }
+      }
+    },
+    "synthetisch": {
+      "emails": 150,
+      "verteilung": {
+        "dringlichkeit": {
+          "\"sofort\"": 47,
+          "\"bald\"": 48,
+          "\"später\"": 55
+        },
+        "kategorie": {
+          "\"termin\"": 32,
+          "\"persönlich\"": 45,
+          "\"sonstiges\"": 13,
+          "\"rechnung_finanzen\"": 29,
+          "\"newsletter_werbung\"": 15,
+          "\"benachrichtigung\"": 16
+        },
+        "antwort_noetig": {
+          "false": 89,
+          "true": 61
+        },
+        "phishing_verdacht": {
+          "false": 126,
+          "true": 24
+        }
+      },
+      "immer_haeufigste_klasse": {
+        "dringlichkeit": 0.3667,
+        "kategorie": 0.3,
+        "antwort_noetig": 0.5933,
+        "phishing_verdacht": 0.84
+      },
+      "modelle": {
+        "gpt-6-luna": {
+          "aufrufe": 300,
+          "ungueltig": 0,
+          "fehlerarten": {},
+          "felder": {
+            "dringlichkeit": {
+              "n": 300,
+              "accuracy": 0.8533,
+              "macro_f1": 0.8531,
+              "recall": {
+                "\"sofort\"": 0.9149,
+                "\"bald\"": 0.9375,
+                "\"später\"": 0.7273
+              },
+              "precision": {
+                "\"sofort\"": 0.8431,
+                "\"bald\"": 0.8036,
+                "\"später\"": 0.9302
+              },
+              "confusion": {
+                "\"sofort\"": {
+                  "\"sofort\"": 86,
+                  "\"bald\"": 8
+                },
+                "\"später\"": {
+                  "\"bald\"": 14,
+                  "\"später\"": 80,
+                  "\"sofort\"": 16
+                },
+                "\"bald\"": {
+                  "\"später\"": 6,
+                  "\"bald\"": 90
+                }
+              }
+            },
+            "kategorie": {
+              "n": 300,
+              "accuracy": 0.8467,
+              "macro_f1": 0.7539,
+              "recall": {
+                "\"persönlich\"": 0.9778,
+                "\"termin\"": 0.7969,
+                "\"rechnung_finanzen\"": 0.8966,
+                "\"benachrichtigung\"": 1.0,
+                "\"newsletter_werbung\"": 0.9667,
+                "\"sonstiges\"": 0.0769
+              },
+              "precision": {
+                "\"persönlich\"": 0.8627,
+                "\"termin\"": 0.9623,
+                "\"rechnung_finanzen\"": 1.0,
+                "\"benachrichtigung\"": 0.5333,
+                "\"newsletter_werbung\"": 0.9355,
+                "\"sonstiges\"": 1.0
+              },
+              "confusion": {
+                "\"termin\"": {
+                  "\"termin\"": 51,
+                  "\"benachrichtigung\"": 2,
+                  "\"persönlich\"": 11
+                },
+                "\"rechnung_finanzen\"": {
+                  "\"benachrichtigung\"": 4,
+                  "\"rechnung_finanzen\"": 52,
+                  "\"persönlich\"": 2
+                },
+                "\"sonstiges\"": {
+                  "\"sonstiges\"": 2,
+                  "\"benachrichtigung\"": 20,
+                  "\"termin\"": 1,
+                  "\"newsletter_werbung\"": 2,
+                  "\"persönlich\"": 1
+                },
+                "\"persönlich\"": {
+                  "\"persönlich\"": 88,
+                  "\"benachrichtigung\"": 2
+                },
+                "\"newsletter_werbung\"": {
+                  "\"newsletter_werbung\"": 29,
+                  "\"termin\"": 1
+                },
+                "\"benachrichtigung\"": {
+                  "\"benachrichtigung\"": 32
+                }
+              }
+            },
+            "antwort_noetig": {
+              "n": 300,
+              "accuracy": 0.9267,
+              "macro_f1": 0.9257,
+              "recall": {
+                "true": 1.0,
+                "false": 0.8764
+              },
+              "precision": {
+                "true": 0.8472,
+                "false": 1.0
+              },
+              "confusion": {
+                "false": {
+                  "false": 156,
+                  "true": 22
+                },
+                "true": {
+                  "true": 122
+                }
+              }
+            },
+            "phishing_verdacht": {
+              "n": 300,
+              "accuracy": 0.9667,
+              "macro_f1": 0.9346,
+              "recall": {
+                "true": 0.8333,
+                "false": 0.9921
+              },
+              "precision": {
+                "true": 0.9524,
+                "false": 0.969
+              },
+              "confusion": {
+                "false": {
+                  "false": 250,
+                  "true": 2
+                },
+                "true": {
+                  "true": 40,
+                  "false": 8
+                }
+              }
+            }
+          },
+          "alle_vier_richtig": 0.6433,
+          "konstanz": {
+            "dringlichkeit": 0.9733,
+            "kategorie": 0.9533,
+            "antwort_noetig": 1.0,
+            "phishing_verdacht": 1.0,
+            "alle_felder": 0.9267
+          },
+          "latenz_ms": {
+            "p50": 1031.1,
+            "p95": 1538.2,
+            "mittel": 1099.3
+          },
+          "kosten_pro_1000_usd": 0.0916,
+          "tokens_in_mittel": 729.9
+        },
+        "haiku-4.5": {
+          "aufrufe": 300,
+          "ungueltig": 0,
+          "fehlerarten": {},
+          "felder": {
+            "dringlichkeit": {
+              "n": 300,
+              "accuracy": 0.7767,
+              "macro_f1": 0.7749,
+              "recall": {
+                "\"sofort\"": 0.9681,
+                "\"bald\"": 0.7396,
+                "\"später\"": 0.6455
+              },
+              "precision": {
+                "\"sofort\"": 0.6842,
+                "\"bald\"": 0.7802,
+                "\"später\"": 0.9342
+              },
+              "confusion": {
+                "\"sofort\"": {
+                  "\"sofort\"": 91,
+                  "\"bald\"": 3
+                },
+                "\"später\"": {
+                  "\"sofort\"": 22,
+                  "\"später\"": 71,
+                  "\"bald\"": 17
+                },
+                "\"bald\"": {
+                  "\"bald\"": 71,
+                  "\"sofort\"": 20,
+                  "\"später\"": 5
+                }
+              }
+            },
+            "kategorie": {
+              "n": 300,
+              "accuracy": 0.7567,
+              "macro_f1": 0.6892,
+              "recall": {
+                "\"persönlich\"": 0.5222,
+                "\"termin\"": 1.0,
+                "\"rechnung_finanzen\"": 0.9483,
+                "\"benachrichtigung\"": 1.0,
+                "\"newsletter_werbung\"": 0.9333,
+                "\"sonstiges\"": 0.0385
+              },
+              "precision": {
+                "\"persönlich\"": 1.0,
+                "\"termin\"": 0.7442,
+                "\"rechnung_finanzen\"": 0.9016,
+                "\"benachrichtigung\"": 0.4848,
+                "\"newsletter_werbung\"": 1.0,
+                "\"sonstiges\"": 0.0833
+              },
+              "confusion": {
+                "\"termin\"": {
+                  "\"termin\"": 64
+                },
+                "\"rechnung_finanzen\"": {
+                  "\"benachrichtigung\"": 2,
+                  "\"rechnung_finanzen\"": 55,
+                  "\"sonstiges\"": 1
+                },
+                "\"sonstiges\"": {
+                  "\"benachrichtigung\"": 24,
+                  "\"sonstiges\"": 1,
+                  "\"termin\"": 1
+                },
+                "\"persönlich\"": {
+                  "\"persönlich\"": 47,
+                  "\"benachrichtigung\"": 6,
+                  "\"rechnung_finanzen\"": 6,
+                  "\"sonstiges\"": 10,
+                  "\"termin\"": 21
+                },
+                "\"newsletter_werbung\"": {
+                  "\"newsletter_werbung\"": 28,
+                  "\"benachrichtigung\"": 2
+                },
+                "\"benachrichtigung\"": {
+                  "\"benachrichtigung\"": 32
+                }
+              }
+            },
+            "antwort_noetig": {
+              "n": 300,
+              "accuracy": 0.8833,
+              "macro_f1": 0.8828,
+              "recall": {
+                "true": 1.0,
+                "false": 0.8034
+              },
+              "precision": {
+                "true": 0.7771,
+                "false": 1.0
+              },
+              "confusion": {
+                "false": {
+                  "false": 143,
+                  "true": 35
+                },
+                "true": {
+                  "true": 122
+                }
+              }
+            },
+            "phishing_verdacht": {
+              "n": 300,
+              "accuracy": 0.9667,
+              "macro_f1": 0.9321,
+              "recall": {
+                "true": 0.7917,
+                "false": 1.0
+              },
+              "precision": {
+                "true": 1.0,
+                "false": 0.9618
+              },
+              "confusion": {
+                "false": {
+                  "false": 252
+                },
+                "true": {
+                  "true": 38,
+                  "false": 10
+                }
+              }
+            }
+          },
+          "alle_vier_richtig": 0.4833,
+          "konstanz": {
+            "dringlichkeit": 0.9467,
+            "kategorie": 0.92,
+            "antwort_noetig": 0.98,
+            "phishing_verdacht": 1.0,
+            "alle_felder": 0.8667
+          },
+          "latenz_ms": {
+            "p50": 1091.2,
+            "p95": 1413.8,
+            "mittel": 1114.3
+          },
+          "kosten_pro_1000_usd": 2.2475,
+          "tokens_in_mittel": 1740.1
+        },
+        "jev": {
+          "aufrufe": 300,
+          "ungueltig": 0,
+          "fehlerarten": {},
+          "felder": {
+            "dringlichkeit": {
+              "n": 300,
+              "accuracy": 0.8667,
+              "macro_f1": 0.8659,
+              "recall": {
+                "\"sofort\"": 0.8723,
+                "\"bald\"": 0.9792,
+                "\"später\"": 0.7636
+              },
+              "precision": {
+                "\"sofort\"": 0.8039,
+                "\"bald\"": 0.8393,
+                "\"später\"": 0.9767
+              },
+              "confusion": {
+                "\"sofort\"": {
+                  "\"sofort\"": 82,
+                  "\"bald\"": 12
+                },
+                "\"später\"": {
+                  "\"später\"": 84,
+                  "\"bald\"": 6,
+                  "\"sofort\"": 20
+                },
+                "\"bald\"": {
+                  "\"bald\"": 94,
+                  "\"später\"": 2
+                }
+              }
+            },
+            "kategorie": {
+              "n": 300,
+              "accuracy": 0.8967,
+              "macro_f1": 0.8719,
+              "recall": {
+                "\"persönlich\"": 0.8222,
+                "\"termin\"": 1.0,
+                "\"rechnung_finanzen\"": 0.8966,
+                "\"benachrichtigung\"": 1.0,
+                "\"newsletter_werbung\"": 1.0,
+                "\"sonstiges\"": 0.6538
+              },
+              "precision": {
+                "\"persönlich\"": 0.9867,
+                "\"termin\"": 1.0,
+                "\"rechnung_finanzen\"": 0.9811,
+                "\"benachrichtigung\"": 0.7442,
+                "\"newsletter_werbung\"": 0.9375,
+                "\"sonstiges\"": 0.5152
+              },
+              "confusion": {
+                "\"termin\"": {
+                  "\"termin\"": 64
+                },
+                "\"rechnung_finanzen\"": {
+                  "\"benachrichtigung\"": 4,
+                  "\"rechnung_finanzen\"": 52,
+                  "\"sonstiges\"": 1,
+                  "\"persönlich\"": 1
+                },
+                "\"sonstiges\"": {
+                  "\"sonstiges\"": 17,
+                  "\"benachrichtigung\"": 7,
+                  "\"newsletter_werbung\"": 2
+                },
+                "\"persönlich\"": {
+                  "\"persönlich\"": 74,
+                  "\"sonstiges\"": 15,
+                  "\"rechnung_finanzen\"": 1
+                },
+                "\"newsletter_werbung\"": {
+                  "\"newsletter_werbung\"": 30
+                },
+                "\"benachrichtigung\"": {
+                  "\"benachrichtigung\"": 32
+                }
+              }
+            },
+            "antwort_noetig": {
+              "n": 300,
+              "accuracy": 0.88,
+              "macro_f1": 0.8795,
+              "recall": {
+                "true": 1.0,
+                "false": 0.7978
+              },
+              "precision": {
+                "true": 0.7722,
+                "false": 1.0
+              },
+              "confusion": {
+                "false": {
+                  "false": 142,
+                  "true": 36
+                },
+                "true": {
+                  "true": 122
+                }
+              }
+            },
+            "phishing_verdacht": {
+              "n": 300,
+              "accuracy": 0.9667,
+              "macro_f1": 0.9346,
+              "recall": {
+                "true": 0.8333,
+                "false": 0.9921
+              },
+              "precision": {
+                "true": 0.9524,
+                "false": 0.969
+              },
+              "confusion": {
+                "false": {
+                  "false": 250,
+                  "true": 2
+                },
+                "true": {
+                  "true": 40,
+                  "false": 8
+                }
+              }
+            }
+          },
+          "alle_vier_richtig": 0.6533,
+          "konstanz": {
+            "dringlichkeit": 1.0,
+            "kategorie": 0.98,
+            "antwort_noetig": 0.9867,
+            "phishing_verdacht": 1.0,
+            "alle_felder": 0.9667
+          },
+          "latenz_ms": {
+            "p50": 256.9,
+            "p95": 357.9,
+            "mittel": 266.1
+          },
+          "kosten_pro_1000_usd": 0.0485,
+          "tokens_in_mittel": 1155.7
+        },
+        "jev-de": {
+          "aufrufe": 300,
+          "ungueltig": 0,
+          "fehlerarten": {},
+          "felder": {
+            "dringlichkeit": {
+              "n": 300,
+              "accuracy": 0.89,
+              "macro_f1": 0.8896,
+              "recall": {
+                "\"sofort\"": 0.8936,
+                "\"bald\"": 0.9792,
+                "\"später\"": 0.8091
+              },
+              "precision": {
+                "\"sofort\"": 0.8235,
+                "\"bald\"": 0.8785,
+                "\"später\"": 0.978
+              },
+              "confusion": {
+                "\"sofort\"": {
+                  "\"sofort\"": 84,
+                  "\"bald\"": 10
+                },
+                "\"später\"": {
+                  "\"später\"": 89,
+                  "\"bald\"": 3,
+                  "\"sofort\"": 18
+                },
+                "\"bald\"": {
+                  "\"bald\"": 94,
+                  "\"später\"": 2
+                }
+              }
+            },
+            "kategorie": {
+              "n": 300,
+              "accuracy": 0.88,
+              "macro_f1": 0.8551,
+              "recall": {
+                "\"persönlich\"": 0.7556,
+                "\"termin\"": 1.0,
+                "\"rechnung_finanzen\"": 0.931,
+                "\"benachrichtigung\"": 1.0,
+                "\"newsletter_werbung\"": 1.0,
+                "\"sonstiges\"": 0.6154
+              },
+              "precision": {
+                "\"persönlich\"": 1.0,
+                "\"termin\"": 1.0,
+                "\"rechnung_finanzen\"": 0.931,
+                "\"benachrichtigung\"": 0.7442,
+                "\"newsletter_werbung\"": 0.9091,
+                "\"sonstiges\"": 0.4706
+              },
+              "confusion": {
+                "\"termin\"": {
+                  "\"termin\"": 64
+                },
+                "\"rechnung_finanzen\"": {
+                  "\"benachrichtigung\"": 4,
+                  "\"rechnung_finanzen\"": 54
+                },
+                "\"sonstiges\"": {
+                  "\"sonstiges\"": 16,
+                  "\"benachrichtigung\"": 7,
+                  "\"newsletter_werbung\"": 3
+                },
+                "\"persönlich\"": {
+                  "\"persönlich\"": 68,
+                  "\"sonstiges\"": 18,
+                  "\"rechnung_finanzen\"": 4
+                },
+                "\"newsletter_werbung\"": {
+                  "\"newsletter_werbung\"": 30
+                },
+                "\"benachrichtigung\"": {
+                  "\"benachrichtigung\"": 32
+                }
+              }
+            },
+            "antwort_noetig": {
+              "n": 300,
+              "accuracy": 0.83,
+              "macro_f1": 0.83,
+              "recall": {
+                "true": 1.0,
+                "false": 0.7135
+              },
+              "precision": {
+                "true": 0.7052,
+                "false": 1.0
+              },
+              "confusion": {
+                "false": {
+                  "false": 127,
+                  "true": 51
+                },
+                "true": {
+                  "true": 122
+                }
+              }
+            },
+            "phishing_verdacht": {
+              "n": 300,
+              "accuracy": 0.9533,
+              "macro_f1": 0.9068,
+              "recall": {
+                "true": 0.7708,
+                "false": 0.9881
+              },
+              "precision": {
+                "true": 0.925,
+                "false": 0.9577
+              },
+              "confusion": {
+                "false": {
+                  "false": 249,
+                  "true": 3
+                },
+                "true": {
+                  "true": 37,
+                  "false": 11
+                }
+              }
+            }
+          },
+          "alle_vier_richtig": 0.6167,
+          "konstanz": {
+            "dringlichkeit": 0.9933,
+            "kategorie": 0.9867,
+            "antwort_noetig": 0.98,
+            "phishing_verdacht": 0.9867,
+            "alle_felder": 0.9467
+          },
+          "latenz_ms": {
+            "p50": 252.7,
+            "p95": 350.3,
+            "mittel": 264.0
+          },
+          "kosten_pro_1000_usd": 0.0524,
+          "tokens_in_mittel": 1248.7
+        }
+      },
+      "hybrid": {
+        "gpt-6-luna": [
+          {
+            "schwelle": 0.0,
+            "n": 150,
+            "eskaliert": 0.0,
+            "genauigkeit": {
+              "dringlichkeit": 0.8667,
+              "kategorie": 0.8933,
+              "antwort_noetig": 0.8733,
+              "phishing_verdacht": 0.9667,
+              "alle_vier": 0.6467
+            },
+            "kosten_pro_1000_usd": 0.0485,
+            "latenz_mittel_ms": 269.5
+          },
+          {
+            "schwelle": 0.3,
+            "n": 150,
+            "eskaliert": 0.18,
+            "genauigkeit": {
+              "dringlichkeit": 0.88,
+              "kategorie": 0.9,
+              "antwort_noetig": 0.9133,
+              "phishing_verdacht": 0.9667,
+              "alle_vier": 0.6933
+            },
+            "kosten_pro_1000_usd": 0.0659,
+            "latenz_mittel_ms": 464.0
+          },
+          {
+            "schwelle": 0.5,
+            "n": 150,
+            "eskaliert": 0.3333,
+            "genauigkeit": {
+              "dringlichkeit": 0.8933,
+              "kategorie": 0.8933,
+              "antwort_noetig": 0.9267,
+              "phishing_verdacht": 0.9667,
+              "alle_vier": 0.72
+            },
+            "kosten_pro_1000_usd": 0.0806,
+            "latenz_mittel_ms": 640.5
+          },
+          {
+            "schwelle": 0.6,
+            "n": 150,
+            "eskaliert": 0.4933,
+            "genauigkeit": {
+              "dringlichkeit": 0.88,
+              "kategorie": 0.8933,
+              "antwort_noetig": 0.9267,
+              "phishing_verdacht": 0.9667,
+              "alle_vier": 0.7133
+            },
+            "kosten_pro_1000_usd": 0.0955,
+            "latenz_mittel_ms": 808.9
+          },
+          {
+            "schwelle": 0.7,
+            "n": 150,
+            "eskaliert": 0.6133,
+            "genauigkeit": {
+              "dringlichkeit": 0.8667,
+              "kategorie": 0.8933,
+              "antwort_noetig": 0.9267,
+              "phishing_verdacht": 0.9667,
+              "alle_vier": 0.7
+            },
+            "kosten_pro_1000_usd": 0.1065,
+            "latenz_mittel_ms": 932.1
+          },
+          {
+            "schwelle": 0.8,
+            "n": 150,
+            "eskaliert": 0.7267,
+            "genauigkeit": {
+              "dringlichkeit": 0.8667,
+              "kategorie": 0.88,
+              "antwort_noetig": 0.9267,
+              "phishing_verdacht": 0.9667,
+              "alle_vier": 0.6867
+            },
+            "kosten_pro_1000_usd": 0.1161,
+            "latenz_mittel_ms": 1059.3
+          },
+          {
+            "schwelle": 0.9,
+            "n": 150,
+            "eskaliert": 0.9267,
+            "genauigkeit": {
+              "dringlichkeit": 0.8467,
+              "kategorie": 0.86,
+              "antwort_noetig": 0.9267,
+              "phishing_verdacht": 0.9667,
+              "alle_vier": 0.6467
+            },
+            "kosten_pro_1000_usd": 0.1338,
+            "latenz_mittel_ms": 1280.5
+          },
+          {
+            "schwelle": 0.95,
+            "n": 150,
+            "eskaliert": 1.0,
+            "genauigkeit": {
+              "dringlichkeit": 0.8467,
+              "kategorie": 0.8533,
+              "antwort_noetig": 0.9267,
+              "phishing_verdacht": 0.9667,
+              "alle_vier": 0.64
+            },
+            "kosten_pro_1000_usd": 0.1401,
+            "latenz_mittel_ms": 1354.5
+          },
+          {
+            "schwelle": 1.01,
+            "n": 150,
+            "eskaliert": 1.0,
+            "genauigkeit": {
+              "dringlichkeit": 0.8467,
+              "kategorie": 0.8533,
+              "antwort_noetig": 0.9267,
+              "phishing_verdacht": 0.9667,
+              "alle_vier": 0.64
+            },
+            "kosten_pro_1000_usd": 0.1401,
+            "latenz_mittel_ms": 1354.5
+          }
+        ],
+        "haiku-4.5": [
+          {
+            "schwelle": 0.0,
+            "n": 150,
+            "eskaliert": 0.0,
+            "genauigkeit": {
+              "dringlichkeit": 0.8667,
+              "kategorie": 0.8933,
+              "antwort_noetig": 0.8733,
+              "phishing_verdacht": 0.9667,
+              "alle_vier": 0.6467
+            },
+            "kosten_pro_1000_usd": 0.0485,
+            "latenz_mittel_ms": 269.5
+          },
+          {
+            "schwelle": 0.3,
+            "n": 150,
+            "eskaliert": 0.18,
+            "genauigkeit": {
+              "dringlichkeit": 0.8733,
+              "kategorie": 0.9,
+              "antwort_noetig": 0.88,
+              "phishing_verdacht": 0.9667,
+              "alle_vier": 0.68
+            },
+            "kosten_pro_1000_usd": 0.4649,
+            "latenz_mittel_ms": 483.3
+          },
+          {
+            "schwelle": 0.5,
+            "n": 150,
+            "eskaliert": 0.3333,
+            "genauigkeit": {
+              "dringlichkeit": 0.8733,
+              "kategorie": 0.8533,
+              "antwort_noetig": 0.88,
+              "phishing_verdacht": 0.9667,
+              "alle_vier": 0.6667
+            },
+            "kosten_pro_1000_usd": 0.8184,
+            "latenz_mittel_ms": 654.1
+          },
+          {
+            "schwelle": 0.6,
+            "n": 150,
+            "eskaliert": 0.4933,
+            "genauigkeit": {
+              "dringlichkeit": 0.8467,
+              "kategorie": 0.8333,
+              "antwort_noetig": 0.88,
+              "phishing_verdacht": 0.9667,
+              "alle_vier": 0.62
+            },
+            "kosten_pro_1000_usd": 1.1824,
+            "latenz_mittel_ms": 829.7
+          },
+          {
+            "schwelle": 0.7,
+            "n": 150,
+            "eskaliert": 0.6133,
+            "genauigkeit": {
+              "dringlichkeit": 0.8267,
+              "kategorie": 0.8067,
+              "antwort_noetig": 0.88,
+              "phishing_verdacht": 0.9667,
+              "alle_vier": 0.58
+            },
+            "kosten_pro_1000_usd": 1.4525,
+            "latenz_mittel_ms": 974.7
+          },
+          {
+            "schwelle": 0.8,
+            "n": 150,
+            "eskaliert": 0.7267,
+            "genauigkeit": {
+              "dringlichkeit": 0.8133,
+              "kategorie": 0.78,
+              "antwort_noetig": 0.88,
+              "phishing_verdacht": 0.9667,
+              "alle_vier": 0.54
+            },
+            "kosten_pro_1000_usd": 1.6968,
+            "latenz_mittel_ms": 1099.4
+          },
+          {
+            "schwelle": 0.9,
+            "n": 150,
+            "eskaliert": 0.9267,
+            "genauigkeit": {
+              "dringlichkeit": 0.7733,
+              "kategorie": 0.7667,
+              "antwort_noetig": 0.88,
+              "phishing_verdacht": 0.9667,
+              "alle_vier": 0.4867
+            },
+            "kosten_pro_1000_usd": 2.1365,
+            "latenz_mittel_ms": 1313.4
+          },
+          {
+            "schwelle": 0.95,
+            "n": 150,
+            "eskaliert": 1.0,
+            "genauigkeit": {
+              "dringlichkeit": 0.7667,
+              "kategorie": 0.7667,
+              "antwort_noetig": 0.88,
+              "phishing_verdacht": 0.9667,
+              "alle_vier": 0.48
+            },
+            "kosten_pro_1000_usd": 2.2962,
+            "latenz_mittel_ms": 1383.7
+          },
+          {
+            "schwelle": 1.01,
+            "n": 150,
+            "eskaliert": 1.0,
+            "genauigkeit": {
+              "dringlichkeit": 0.7667,
+              "kategorie": 0.7667,
+              "antwort_noetig": 0.88,
+              "phishing_verdacht": 0.9667,
+              "alle_vier": 0.48
+            },
+            "kosten_pro_1000_usd": 2.2962,
+            "latenz_mittel_ms": 1383.7
+          }
+        ]
+      },
+      "generator_bias": {
+        "gpt-6-luna": {
+          "gemini-3.8-flash": {
+            "n": 106,
+            "alle_vier_richtig": 0.6038,
+            "familie": "google"
+          },
+          "gpt-6-sol": {
+            "n": 108,
+            "alle_vier_richtig": 0.6481,
+            "familie": "openai"
+          },
+          "opus-5.5": {
+            "n": 86,
+            "alle_vier_richtig": 0.686,
+            "familie": "anthropic"
+          }
+        },
+        "haiku-4.5": {
+          "gemini-3.8-flash": {
+            "n": 106,
+            "alle_vier_richtig": 0.4528,
+            "familie": "google"
+          },
+          "gpt-6-sol": {
+            "n": 108,
+            "alle_vier_richtig": 0.5093,
+            "familie": "openai"
+          },
+          "opus-5.5": {
+            "n": 86,
+            "alle_vier_richtig": 0.4884,
+            "familie": "anthropic"
+          }
+        },
+        "jev": {
+          "gemini-3.8-flash": {
+            "n": 106,
+            "alle_vier_richtig": 0.6509,
+            "familie": "google"
+          },
+          "gpt-6-sol": {
+            "n": 108,
+            "alle_vier_richtig": 0.5926,
+            "familie": "openai"
+          },
+          "opus-5.5": {
+            "n": 86,
+            "alle_vier_richtig": 0.7326,
+            "familie": "anthropic"
+          }
+        },
+        "jev-de": {
+          "gemini-3.8-flash": {
+            "n": 106,
+            "alle_vier_richtig": 0.5755,
+            "familie": "google"
+          },
+          "gpt-6-sol": {
+            "n": 108,
+            "alle_vier_richtig": 0.6204,
+            "familie": "openai"
+          },
+          "opus-5.5": {
+            "n": 86,
+            "alle_vier_richtig": 0.6628,
+            "familie": "anthropic"
+          }
+        }
+      },
+      "pruefer_vs_absicht": {
+        "dringlichkeit": 0.9133,
+        "kategorie": 0.9533,
+        "antwort_noetig": 0.9333,
+        "phishing_verdacht": 0.98
+      },
+      "signifikanz": {
+        "alle_vier_lauf1": {
+          "gpt-6-luna": {
+            "k": 96,
+            "n": 150,
+            "anteil": 0.64,
+            "ki95": [
+              0.5606,
+              0.7124
+            ]
+          },
+          "haiku-4.5": {
+            "k": 72,
+            "n": 150,
+            "anteil": 0.48,
+            "ki95": [
+              0.4015,
+              0.5594
+            ]
+          },
+          "jev": {
+            "k": 97,
+            "n": 150,
+            "anteil": 0.6467,
+            "ki95": [
+              0.5674,
+              0.7186
+            ]
+          },
+          "jev-de": {
+            "k": 94,
+            "n": 150,
+            "anteil": 0.6267,
+            "ki95": [
+              0.547,
+              0.7
+            ]
+          }
+        },
+        "mcnemar": {
+          "gpt-6-luna vs haiku-4.5": {
+            "nur_a": 31,
+            "nur_b": 7,
+            "p": 0.0001
+          },
+          "gpt-6-luna vs jev": {
+            "nur_a": 20,
+            "nur_b": 21,
+            "p": 1.0
+          },
+          "gpt-6-luna vs jev-de": {
+            "nur_a": 23,
+            "nur_b": 21,
+            "p": 0.8804
+          },
+          "haiku-4.5 vs jev": {
+            "nur_a": 14,
+            "nur_b": 39,
+            "p": 0.0008
+          },
+          "haiku-4.5 vs jev-de": {
+            "nur_a": 11,
+            "nur_b": 33,
+            "p": 0.0013
+          },
+          "jev vs jev-de": {
+            "nur_a": 8,
+            "nur_b": 5,
+            "p": 0.5811
+          }
+        }
+      }
+    }
+  }
+}
