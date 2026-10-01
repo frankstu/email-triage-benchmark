@@ -1,0 +1,14 @@
+# Echte E-Mails und alles daraus Abgeleitete niemals committen
+data/raw/*
+data/anonymized/*
+data/labels*/
+data/*.log
+!data/**/.gitkeep
+*.eml
+*.emlx
+
+.env
+.venv/
+__pycache__/
+*.egg-info/
+.pytest_cache/

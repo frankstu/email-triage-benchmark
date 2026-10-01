@@ -1,0 +1,47 @@
+[project]
+name = "jev-bench"
+version = "0.1.0"
+description = "Vergleich von JEV mit LLMs bei der Klassifizierung von E-Mails"
+requires-python = ">=3.12"
+dependencies = [
+    "anthropic==1.11.0",
+    "beautifulsoup4==4.15.0",
+    "httpx==0.28.1",
+    "openai==3.22.1",
+    "spacy==3.8.16",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pyflakes==4.0.1",
+    "pylint==4.1.1",
+    "pyright==1.1.414",
+    "pytest==9.1.1",
+]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
+
+[tool.pyright]
+include = ["src", "tests", "scripts"]
+extraPaths = ["src"]
+venvPath = "."
+venv = ".venv"
+pythonVersion = "3.14"
+typeCheckingMode = "standard"
+
+[tool.pylint.main]
+source-roots = ["src"]
+
+[tool.pylint."messages control"]
+disable = ["missing-module-docstring", "missing-function-docstring", "missing-class-docstring"]
+
+[tool.pylint.format]
+max-line-length = 110
+
+[tool.pylint.design]
+# Datensätze und die zwei Pipeline-Funktionen sind bewusst flach gehalten
+max-attributes = 10
+max-locals = 20
+min-public-methods = 1
