@@ -55,6 +55,10 @@ Die Anonymisierung läuft lokal (Regex + spaCy), ohne Netzwerkzugriff.
 
        .venv/bin/python -m jev_bench.evaluate
 
+8. **Diagramme** → `results/charts/` (Überblick, Hybrid-Kurve, Latenzverteilung):
+
+       .venv/bin/pip install -e '.[charts]' && .venv/bin/python scripts/charts.py
+
 Veröffentlicht sind die synthetischen E-Mails samt Ground Truth und alle Kennzahlen.
 Die echten E-Mails und alles daraus Abgeleitete bleiben lokal. Kosten sind zu
 Listenpreisen der Anbieter aus den gemeldeten Tokens berechnet.
