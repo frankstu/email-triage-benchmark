@@ -136,7 +136,7 @@ def _numbers(metrics: Mapping[str, object]) -> dict[str, object]:
         "consistency": [100 * mods[m]["konstanz"]["alle_felder"] for m, _ in MODELS],
         "p_luna": float(p_luna),
         "hybrid": next(h for h in syn["hybrid"]["gpt-6-luna"] if h["schwelle"] == HYBRID_SHOWN),
-        "real": echt["signifikanz"]["alle_vier_lauf1"],
+        "real": {m: v["alle_vier_richtig"] for m, v in echt["modelle"].items()},  # beide Läufe, wie oben
         "later_share": echt["immer_haeufigste_klasse"]["dringlichkeit"],
         "luna_tokens": (mods["gpt-6-luna"]["tokens_in_mittel"], mods["gpt-6-luna"]["tokens_out_mittel"]),
     }
@@ -159,9 +159,9 @@ def _findings(n: Mapping[str, object]) -> list[tuple[str, str]]:
          f"{de(hybrid['kosten_pro_1000_usd'], 2)} $ pro 1.000 · "
          f"Ø {de(hybrid['latenz_mittel_ms'])} ms*", C.INK),
         (f"Echtes privates Postfach (300 E-Mails, {de(later)} % davon „später“): "
-         f"Haiku {de(100 * real['haiku-4.5']['anteil'])} %, Luna {de(100 * real['gpt-6-luna']['anteil'])} %, "
-         f"JEV {de(100 * real['jev']['anteil'])} % alle 4 richtig.", C.INK_2),
-        (f"Zum Vergleich, geschätzt**: OpenAI Ultrafast mit GPT-6 Astra käme auf ca. {de(ultrafast)} $ "
+         f"Haiku {de(100 * real['haiku-4.5'], 1)} %, Luna {de(100 * real['gpt-6-luna'], 1)} %, "
+         f"JEV {de(100 * real['jev'], 1)} % alle 4 richtig.", C.INK_2),
+        (f"Zum Vergleich, rechnerisch**: OpenAI Ultrafast mit GPT-6 Astra käme auf ca. {de(ultrafast)} $ "
          f"pro 1.000 E-Mails – rund {de(round(ultrafast / cost[0], -2))}× JEV.", C.INK_2),
     ]
 
@@ -174,8 +174,8 @@ def overview(metrics: Mapping[str, object]) -> Path:
     assert isinstance(cost, list) and isinstance(consistency, list)
 
     fig = plt.figure(figsize=(12, 7.2), dpi=DPI)
-    fig.text(0.04, 0.945, f"JEV sortiert E-Mails so gut wie GPT-6 Luna – {de(latency[1] / latency[0])}× "
-             f"schneller und {de(cost[1] / cost[0], 1)}× günstiger", fontsize=21, fontweight="bold",
+    fig.text(0.04, 0.945, f"JEV: ähnliche Trefferquote wie GPT-6 Luna, {de(latency[1] / latency[0])}× "
+             f"schneller und {de(100 * (1 - cost[0] / cost[1]))} % günstiger", fontsize=21, fontweight="bold",
              color=C.INK, va="top")
     fig.text(0.04, 0.885, "150 synthetische Geschäfts-E-Mails · je 4 Entscheidungen in einem Aufruf "
              "(Dringlichkeit, Kategorie, Antwort nötig, Phishing) · 2 Durchläufe",
@@ -205,9 +205,9 @@ def overview(metrics: Mapping[str, object]) -> Path:
     for i, (text, ink) in enumerate(_findings(n)):
         fig.text(0.04, 0.285 - 0.05 * i, text, fontsize=12, color=ink, va="top",
                  fontweight="bold" if ink == C.INK else "normal")
-    fig.text(0.04, 0.06, "Ground Truth: Mehrheit aus GPT-6 Sol, Claude Opus 5.5 und Gemini 3.8 Flash. "
+    fig.text(0.04, 0.06, "Referenz: Mehrheit aus GPT-6 Sol, Claude Opus 5.5 und Gemini 3.8 Flash. "
              "Kosten: gemeldete Tokens × Listenpreise. "
-             "*Schwelle auf denselben Daten gewählt, eher optimistisch.",
+             "*Simulation, Schwelle auf denselben Daten gewählt.",
              fontsize=9.5, color=C.MUTED, va="top")
     fig.text(0.04, 0.03, f"**Nicht gemessen: Lunas Tokenverbrauch × Ultrafast-Preise (60/300 $ pro Mio.), "
              f"ohne Reasoning-Tokens. Code und Daten: {REPO}", fontsize=9.5, color=C.MUTED, va="top")

@@ -33,7 +33,7 @@ Die Anonymisierung läuft lokal (Regex + spaCy), ohne Netzwerkzugriff.
 
        .venv/bin/python -m jev_bench.review && open data/raw/review.html
 
-4. **Synthetische Geschäfts-E-Mails** (150, ausgewogene Klassen inkl. Phishing), reihum
+4. **Synthetische Geschäfts-E-Mails** (150, breit gestreute Klassen inkl. Phishing), reihum
    geschrieben von GPT-6 Sol, Claude Opus 5.5 und Gemini 3.8 Flash → `data/synthetic/emails.jsonl`:
 
        .venv/bin/python -m jev_bench.synth --n 150
@@ -59,9 +59,24 @@ Die Anonymisierung läuft lokal (Regex + spaCy), ohne Netzwerkzugriff.
 
        .venv/bin/pip install -e '.[charts]' && .venv/bin/python scripts/charts.py
 
-Veröffentlicht sind die synthetischen E-Mails samt Ground Truth und alle Kennzahlen.
-Die echten E-Mails und alles daraus Abgeleitete bleiben lokal. Kosten sind zu
-Listenpreisen der Anbieter aus den gemeldeten Tokens berechnet.
+Veröffentlicht sind unter `data/synthetic/` die synthetischen E-Mails, die Ground Truth,
+die Einzelantworten der Prüfer (`judges.jsonl`, mit Latenz und Kosten) und aller Kandidaten
+in beiden Läufen (`candidates.jsonl`, bei JEV mit Wahrscheinlichkeiten). Damit lassen sich
+Kennzahlen, Tests und Hybrid-Kurve ohne neue API-Aufrufe nachrechnen. Die echten E-Mails und
+alles daraus Abgeleitete bleiben lokal. Kosten sind zu Listenpreisen der Anbieter aus den
+gemeldeten Tokens berechnet.
+
+## Bekannte Grenzen
+
+- Die Ground Truth stammt von denselben drei Modellen, die die synthetischen E-Mails
+  geschrieben haben. Einen Vorteil für die eigene Modellfamilie zeigt die Auswertung nicht
+  (`generator_bias` in `results/metrics.json`), unabhängig ist die Referenz trotzdem nicht.
+- Die Anweisung an die LLMs (`INSTRUCTIONS` in `schema.py`) spricht von einem privaten
+  Postfach, auch bei den Geschäfts-E-Mails. Die Kategorien „persönlich“, „Termin“ und
+  „Rechnung“ können sich überschneiden. Beides ändert sich erst mit einem neuen Messlauf.
+- Die Hybrid-Kurve ist eine Simulation aus Lauf 1; die Schwelle ist auf denselben Daten gewählt.
+- Prüfer-Reasoning: GPT-6 Sol mit `medium`, Claude Opus 5.5 und Gemini 3.8 Flash mit
+  Standardeinstellungen; GPT-6 Luna ohne Reasoning.
 
 Erreichbarkeit der Modelle prüfen (eine erfundene Test-E-Mail):
 
