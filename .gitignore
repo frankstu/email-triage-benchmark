@@ -16,3 +16,4 @@ data/bench*/
 
 # Entwürfe für Artikel und Beiträge – nicht veröffentlichen
 drafts/
+.claude/launch.json

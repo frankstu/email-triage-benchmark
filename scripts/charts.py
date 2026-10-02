@@ -210,7 +210,7 @@ def overview(metrics: Mapping[str, object]) -> Path:
              "*Schwelle auf denselben Daten gewählt, eher optimistisch.",
              fontsize=9.5, color=C.MUTED, va="top")
     fig.text(0.04, 0.03, f"**Nicht gemessen: Lunas Tokenverbrauch × Ultrafast-Preise (60/300 $ pro Mio.), "
-             f"ohne Denk-Tokens. Code und Daten: {REPO}", fontsize=9.5, color=C.MUTED, va="top")
+             f"ohne Reasoning-Tokens. Code und Daten: {REPO}", fontsize=9.5, color=C.MUTED, va="top")
 
     path = OUT / f"ueberblick{C.suffix}.png"
     fig.savefig(path, dpi=DPI)
