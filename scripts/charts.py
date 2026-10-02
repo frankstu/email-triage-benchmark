@@ -358,8 +358,7 @@ def main() -> int:
     for theme in THEMES:
         apply_theme(theme)
         paths = [overview(metrics), hybrid_chart(metrics)]
-        if theme == "hell":
-            paths.append(linkedin_card(metrics))
+        paths.append(linkedin_card(metrics))  # hell für LinkedIn, dunkel für die Artikelkarte im Blog
         if rows:
             paths.append(latency_chart([r for r in rows if r["dataset"] == "synthetisch"]))
         for p in paths:
