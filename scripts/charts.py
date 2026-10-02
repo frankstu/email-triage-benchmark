@@ -30,11 +30,12 @@ BENCH = Path("data/bench/results.jsonl")
 REPO = "github.com/frankstu/email-triage-benchmark"
 
 # Referenzpalette (dataviz): Akzent + Grau, Tinte und Linien in Text-Tokens.
-# "hell" für LinkedIn, "dunkel" passend zum Blog (Fläche wie dessen Karten).
+# "hell" für LinkedIn (Blau, auf Weiß gut lesbar),
+# "dunkel" passend zum Blog (Bernstein, Fläche wie dessen Karten).
 THEMES: dict[str, dict[str, str]] = {
     "hell": {"ACCENT": "#2a78d6", "DEEMPH": "#a9a79f", "SURFACE": "#fcfcfb", "INK": "#0b0b0b",
              "INK_2": "#52514e", "MUTED": "#898781", "GRID": "#e1e0d9", "BASELINE": "#c3c2b7", "suffix": ""},
-    "dunkel": {"ACCENT": "#3987e5", "DEEMPH": "#6e6e76", "SURFACE": "#121214", "INK": "#f4f4f5",
+    "dunkel": {"ACCENT": "#f2c037", "DEEMPH": "#6e6e76", "SURFACE": "#121214", "INK": "#f4f4f5",
                "INK_2": "#b4b4bb", "MUTED": "#8a8a93", "GRID": "#26262b", "BASELINE": "#3a3a40",
                "suffix": "-dunkel"},
 }
