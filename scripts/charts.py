@@ -218,6 +218,68 @@ def overview(metrics: Mapping[str, object]) -> Path:
     return path
 
 
+def _card_panel(ax: Axes, panel: Panel) -> None:
+    """Panel für das Hochformat: Modellname über jedem Balken, Wert rechts daneben, große Schrift."""
+    ax.set_xlim(0, panel.xmax * 1.45)
+    ax.set_ylim(len(MODELS) - 0.45, -0.95)
+    ax.axis("off")
+    for row, ((model, name), v) in enumerate(zip(MODELS, panel.values, strict=True)):
+        bold = "bold" if model == "jev" else "normal"
+        ax.text(0, row - 0.22, name, va="bottom", ha="left", fontsize=21,
+                color=C.INK if model == "jev" else C.INK_2, fontweight=bold)
+        ax.barh(row, v, height=0.3, color=color(model), linewidth=0)
+        ax.text(v + panel.xmax * 0.04, row, panel.labels[row], va="center", ha="left", fontsize=27,
+                color=C.INK, fontweight=bold)
+    ax.plot([0, 0], [-0.25, len(MODELS) - 0.7], color=C.BASELINE, linewidth=1.5)
+    ax.text(0, 1.1, panel.title, transform=ax.transAxes, fontsize=31, fontweight="bold", color=C.INK,
+            va="bottom")
+    ax.text(0, 1.035, panel.note, transform=ax.transAxes, fontsize=19, color=C.MUTED, va="bottom")
+
+
+def linkedin_card(metrics: Mapping[str, object]) -> Path:
+    """Hochformat 4:5 für den LinkedIn-Feed: wenige Elemente, Schrift auch auf dem Handy lesbar."""
+    n = _numbers(metrics)
+    quality, latency, cost, consistency = n["quality"], n["latency"], n["cost"], n["consistency"]
+    hybrid = n["hybrid"]
+    assert isinstance(quality, list) and isinstance(latency, list) and isinstance(hybrid, dict)
+    assert isinstance(cost, list) and isinstance(consistency, list)
+
+    fig = plt.figure(figsize=(12, 15), dpi=DPI)
+    fig.text(0.06, 0.955, "PRAXISTEST · 150 GESCHÄFTS-E-MAILS · 4 ENTSCHEIDUNGEN PRO E-MAIL",
+             fontsize=17, color=C.ACCENT, fontweight="bold", va="top")
+    fig.text(0.06, 0.925, f"JEV: ähnliche Trefferquote\nwie GPT-6 Luna, aber "
+             f"{de(latency[1] / latency[0])}× schneller\nund {de(100 * (1 - cost[0] / cost[1]))} % günstiger",
+             fontsize=46, fontweight="bold", color=C.INK, va="top", linespacing=1.15)
+
+    p_luna = float(str(n["p_luna"]))
+    panels = (
+        Panel("Qualität", f"alle 4 richtig · JEV vs. Luna: p = {de(p_luna, 1)}", quality,
+              [f"{de(v)} %" for v in quality], 100, (), ""),
+        Panel("Antwortzeit", "Median · weniger ist besser", latency,
+              [f"{de(v)} ms" for v in latency], 1100, (), ""),
+        Panel("Kosten", "pro 1.000 E-Mails · Listenpreise", cost,
+              [f"{de(v, 2)} $" for v in cost], 2.3, (), ""),
+        Panel("Konstanz", "gleiche Antwort in 2 Läufen", consistency,
+              [f"{de(v)} %" for v in consistency], 100, (), ""),
+    )
+    rects = ((0.06, 0.46, 0.41, 0.215), (0.54, 0.46, 0.41, 0.215),
+             (0.06, 0.18, 0.41, 0.215), (0.54, 0.18, 0.41, 0.215))
+    for rect, panel in zip(rects, panels, strict=True):
+        _card_panel(fig.add_axes(rect), panel)
+
+    fig.text(0.06, 0.13, f"Kombination (Simulation): JEV entscheidet, unsichere Fälle gehen an Luna\n"
+             f"→ {de(100 * hybrid['genauigkeit']['alle_vier'])} % alle 4 richtig, "
+             f"{de(hybrid['kosten_pro_1000_usd'], 2)} $ pro 1.000 E-Mails",
+             fontsize=22, color=C.INK, va="top", linespacing=1.35)
+    fig.text(0.06, 0.035, "Referenz: Mehrheit aus GPT-6 Sol, Claude Opus 5.5, Gemini 3.8 Flash · "
+             f"Code und Daten: {REPO}", fontsize=13, color=C.MUTED, va="bottom")
+
+    path = OUT / f"linkedin{C.suffix}.png"
+    fig.savefig(path, dpi=DPI)
+    plt.close(fig)
+    return path
+
+
 def hybrid_chart(metrics: Mapping[str, object]) -> Path:
     syn = metrics["datensaetze"]["synthetisch"]  # type: ignore[index]
     fig, ax = plt.subplots(figsize=(10, 6), dpi=DPI)
@@ -296,6 +358,8 @@ def main() -> int:
     for theme in THEMES:
         apply_theme(theme)
         paths = [overview(metrics), hybrid_chart(metrics)]
+        if theme == "hell":
+            paths.append(linkedin_card(metrics))
         if rows:
             paths.append(latency_chart([r for r in rows if r["dataset"] == "synthetisch"]))
         for p in paths:
