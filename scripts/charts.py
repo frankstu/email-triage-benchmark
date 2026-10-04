@@ -237,45 +237,79 @@ def _card_panel(ax: Axes, panel: Panel) -> None:
     ax.text(0, 1.035, panel.note, transform=ax.transAxes, fontsize=19, color=C.MUTED, va="bottom")
 
 
-def linkedin_card(metrics: Mapping[str, object]) -> Path:
-    """Hochformat 4:5 für den LinkedIn-Feed: wenige Elemente, Schrift auch auf dem Handy lesbar."""
+def en(value: float, digits: int = 0) -> str:
+    """Englische Zahl: 1,234.5"""
+    return f"{value:,.{digits}f}"
+
+
+# Texte der LinkedIn-/X-Grafik; Zahlen werden eingesetzt, nicht eingetippt
+CARD_TEXT: dict[str, dict[str, str]] = {
+    "de": {
+        "kicker": "PRAXISTEST · 150 GESCHÄFTS-E-MAILS · 4 ENTSCHEIDUNGEN PRO E-MAIL",
+        "title": "JEV: ähnliche Trefferquote\nwie GPT-6 Luna, aber {speed}× schneller\n"
+                 "und {saving} % günstiger",
+        "quality": "Qualität", "quality_note": "alle 4 richtig · JEV vs. Luna: p = {p}",
+        "latency": "Antwortzeit", "latency_note": "Median · weniger ist besser",
+        "cost": "Kosten", "cost_note": "pro 1.000 E-Mails · Listenpreise",
+        "consistency": "Konstanz", "consistency_note": "gleiche Antwort in 2 Läufen",
+        "pct": "{v} %", "usd": "{v} $",
+        "hybrid": "Kombination (Simulation): JEV entscheidet, unsichere Fälle gehen an Luna\n"
+                  "→ {acc} % alle 4 richtig, {cost} $ pro 1.000 E-Mails",
+        "footer": "Referenz: Mehrheit aus GPT-6 Sol, Claude Opus 5.5, Gemini 3.8 Flash · "
+                  "Code und Daten: {repo}",
+    },
+    "en": {
+        "kicker": "HANDS-ON TEST · 150 BUSINESS EMAILS · 4 DECISIONS PER EMAIL",
+        "title": "JEV: similar accuracy\nto GPT-6 Luna, but {speed}× faster\nand {saving}% cheaper",
+        "quality": "Accuracy", "quality_note": "all 4 correct · JEV vs Luna: p = {p}",
+        "latency": "Latency", "latency_note": "median · lower is better",
+        "cost": "Cost", "cost_note": "per 1,000 emails · list prices",
+        "consistency": "Consistency", "consistency_note": "same answer in 2 runs",
+        "pct": "{v}%", "usd": "${v}",
+        "hybrid": "Combined (simulation): JEV decides, uncertain cases go to Luna\n"
+                  "→ {acc}% all 4 correct, ${cost} per 1,000 emails",
+        "footer": "Reference: majority vote of GPT-6 Sol, Claude Opus 5.5, Gemini 3.8 Flash · "
+                  "Code and data: {repo}",
+    },
+}
+
+
+def linkedin_card(metrics: Mapping[str, object], lang: str = "de") -> Path:
+    """Hochformat 4:5 für den Social-Media-Feed: wenige Elemente, Schrift auch auf dem Handy lesbar."""
     n = _numbers(metrics)
     quality, latency, cost, consistency = n["quality"], n["latency"], n["cost"], n["consistency"]
     hybrid = n["hybrid"]
     assert isinstance(quality, list) and isinstance(latency, list) and isinstance(hybrid, dict)
     assert isinstance(cost, list) and isinstance(consistency, list)
+    tx, num = CARD_TEXT[lang], (de if lang == "de" else en)
 
     fig = plt.figure(figsize=(12, 15), dpi=DPI)
-    fig.text(0.06, 0.955, "PRAXISTEST · 150 GESCHÄFTS-E-MAILS · 4 ENTSCHEIDUNGEN PRO E-MAIL",
-             fontsize=17, color=C.ACCENT, fontweight="bold", va="top")
-    fig.text(0.06, 0.925, f"JEV: ähnliche Trefferquote\nwie GPT-6 Luna, aber "
-             f"{de(latency[1] / latency[0])}× schneller\nund {de(100 * (1 - cost[0] / cost[1]))} % günstiger",
+    fig.text(0.06, 0.955, tx["kicker"], fontsize=17, color=C.ACCENT, fontweight="bold", va="top")
+    fig.text(0.06, 0.925, tx["title"].format(speed=num(latency[1] / latency[0]),
+                                             saving=num(100 * (1 - cost[0] / cost[1]))),
              fontsize=46, fontweight="bold", color=C.INK, va="top", linespacing=1.15)
 
     p_luna = float(str(n["p_luna"]))
     panels = (
-        Panel("Qualität", f"alle 4 richtig · JEV vs. Luna: p = {de(p_luna, 1)}", quality,
-              [f"{de(v)} %" for v in quality], 100, (), ""),
-        Panel("Antwortzeit", "Median · weniger ist besser", latency,
-              [f"{de(v)} ms" for v in latency], 1100, (), ""),
-        Panel("Kosten", "pro 1.000 E-Mails · Listenpreise", cost,
-              [f"{de(v, 2)} $" for v in cost], 2.3, (), ""),
-        Panel("Konstanz", "gleiche Antwort in 2 Läufen", consistency,
-              [f"{de(v)} %" for v in consistency], 100, (), ""),
+        Panel(tx["quality"], tx["quality_note"].format(p=num(p_luna, 1)), quality,
+              [tx["pct"].format(v=num(v)) for v in quality], 100, (), ""),
+        Panel(tx["latency"], tx["latency_note"], latency, [f"{num(v)} ms" for v in latency], 1100, (), ""),
+        Panel(tx["cost"], tx["cost_note"], cost,
+              [tx["usd"].format(v=num(v, 2)) for v in cost], 2.3, (), ""),
+        Panel(tx["consistency"], tx["consistency_note"], consistency,
+              [tx["pct"].format(v=num(v)) for v in consistency], 100, (), ""),
     )
     rects = ((0.06, 0.46, 0.41, 0.215), (0.54, 0.46, 0.41, 0.215),
              (0.06, 0.18, 0.41, 0.215), (0.54, 0.18, 0.41, 0.215))
     for rect, panel in zip(rects, panels, strict=True):
         _card_panel(fig.add_axes(rect), panel)
 
-    fig.text(0.06, 0.13, f"Kombination (Simulation): JEV entscheidet, unsichere Fälle gehen an Luna\n"
-             f"→ {de(100 * hybrid['genauigkeit']['alle_vier'])} % alle 4 richtig, "
-             f"{de(hybrid['kosten_pro_1000_usd'], 2)} $ pro 1.000 E-Mails",
+    fig.text(0.06, 0.13, tx["hybrid"].format(acc=num(100 * hybrid["genauigkeit"]["alle_vier"]),
+                                             cost=num(hybrid["kosten_pro_1000_usd"], 2)),
              fontsize=22, color=C.INK, va="top", linespacing=1.35)
-    fig.text(0.06, 0.035, "Referenz: Mehrheit aus GPT-6 Sol, Claude Opus 5.5, Gemini 3.8 Flash · "
-             f"Code und Daten: {REPO}", fontsize=13, color=C.MUTED, va="bottom")
+    fig.text(0.06, 0.035, tx["footer"].format(repo=REPO), fontsize=13, color=C.MUTED, va="bottom")
 
-    path = OUT / f"linkedin{C.suffix}.png"
+    path = OUT / f"linkedin{'' if lang == 'de' else '-' + lang}{C.suffix}.png"
     fig.savefig(path, dpi=DPI)
     plt.close(fig)
     return path
@@ -360,6 +394,8 @@ def main() -> int:
         apply_theme(theme)
         paths = [overview(metrics), hybrid_chart(metrics)]
         paths.append(linkedin_card(metrics))  # hell für LinkedIn, dunkel für die Artikelkarte im Blog
+        if theme == "hell":
+            paths.append(linkedin_card(metrics, "en"))  # für X
         if rows:
             paths.append(latency_chart([r for r in rows if r["dataset"] == "synthetisch"]))
         for p in paths:
