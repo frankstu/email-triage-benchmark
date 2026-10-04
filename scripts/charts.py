@@ -71,6 +71,11 @@ def de(value: float, digits: int = 0) -> str:
     return f"{value:,.{digits}f}".replace(",", "X").replace(".", ",").replace("X", ".")
 
 
+def en(value: float, digits: int = 0) -> str:
+    """Englische Zahl: 1,234.5"""
+    return f"{value:,.{digits}f}"
+
+
 def color(model: str) -> str:
     return C.ACCENT if model == "jev" else C.DEEMPH
 
@@ -143,22 +148,36 @@ def _numbers(metrics: Mapping[str, object]) -> dict[str, object]:
     }
 
 
-def _findings(n: Mapping[str, object]) -> list[tuple[str, str]]:
+def _findings(n: Mapping[str, object], lang: str = "de") -> list[tuple[str, str]]:
     cost, hybrid, real = n["cost"], n["hybrid"], n["real"]
     assert isinstance(cost, list) and isinstance(hybrid, dict) and isinstance(real, dict)
     p_luna = float(str(n["p_luna"]))
-    sig_text = "kein signifikanter Unterschied" if p_luna >= 0.05 else "signifikanter Unterschied"
     later = 100 * float(str(n["later_share"]))
     tokens = n["luna_tokens"]
     assert isinstance(tokens, tuple)
     ultrafast = (tokens[0] * ULTRAFAST_ASTRA_USD[0] + tokens[1] * ULTRAFAST_ASTRA_USD[1]) / 1_000_000 * 1000
+    acc, esc = 100 * hybrid["genauigkeit"]["alle_vier"], 100 * hybrid["eskaliert"]
+    h_cost, h_ms = hybrid["kosten_pro_1000_usd"], hybrid["latenz_mittel_ms"]
+    if lang == "en":
+        sig = "no significant difference" if p_luna >= 0.05 else "significant difference"
+        return [
+            (f"Accuracy JEV vs Luna: {sig} (McNemar p = {en(p_luna, 2)}). "
+             f"Claude Haiku: significantly worse and {en(cost[2] / cost[0])}× the cost of JEV.", C.INK_2),
+            (f"Hybrid – JEV decides, uncertain cases ({en(esc)}%) go to Luna: {en(acc)}% all 4 correct · "
+             f"${en(h_cost, 2)} per 1,000 · avg {en(h_ms)} ms*", C.INK),
+            (f"Real private inbox (300 emails, {en(later)}% of them \u201clater\u201d): "
+             f"Haiku {en(100 * real['haiku-4.5'], 1)}%, Luna {en(100 * real['gpt-6-luna'], 1)}%, "
+             f"JEV {en(100 * real['jev'], 1)}% all 4 correct.", C.INK_2),
+            (f"For comparison, calculated**: OpenAI Ultrafast with GPT-6 Astra would cost about "
+             f"${en(ultrafast)} per 1,000 emails \u2013 "
+             f"roughly {en(round(ultrafast / cost[0], -2))}× JEV.", C.INK_2),
+        ]
+    sig = "kein signifikanter Unterschied" if p_luna >= 0.05 else "signifikanter Unterschied"
     return [
-        (f"Qualität JEV vs. Luna: {sig_text} (McNemar p = {de(p_luna, 2)}). "
+        (f"Qualität JEV vs. Luna: {sig} (McNemar p = {de(p_luna, 2)}). "
          f"Claude Haiku: signifikant schlechter und {de(cost[2] / cost[0])}× so teuer wie JEV.", C.INK_2),
-        (f"Hybrid – JEV entscheidet, unsichere Fälle ({de(100 * hybrid['eskaliert'])} %) gehen an Luna: "
-         f"{de(100 * hybrid['genauigkeit']['alle_vier'])} % alle 4 richtig · "
-         f"{de(hybrid['kosten_pro_1000_usd'], 2)} $ pro 1.000 · "
-         f"Ø {de(hybrid['latenz_mittel_ms'])} ms*", C.INK),
+        (f"Hybrid – JEV entscheidet, unsichere Fälle ({de(esc)} %) gehen an Luna: "
+         f"{de(acc)} % alle 4 richtig · {de(h_cost, 2)} $ pro 1.000 · Ø {de(h_ms)} ms*", C.INK),
         (f"Echtes privates Postfach (300 E-Mails, {de(later)} % davon „später“): "
          f"Haiku {de(100 * real['haiku-4.5'], 1)} %, Luna {de(100 * real['gpt-6-luna'], 1)} %, "
          f"JEV {de(100 * real['jev'], 1)} % alle 4 richtig.", C.INK_2),
@@ -167,32 +186,70 @@ def _findings(n: Mapping[str, object]) -> list[tuple[str, str]]:
     ]
 
 
-def overview(metrics: Mapping[str, object]) -> Path:
+def fmt_pct(value: float, lang: str) -> str:
+    return f"{de(value)} %" if lang == "de" else f"{en(value)}%"
+
+
+def fmt_usd(value: float, lang: str) -> str:
+    return f"{de(value, 2)} $" if lang == "de" else f"${en(value, 2)}"
+
+
+OVERVIEW_TEXT: dict[str, dict[str, str]] = {
+    "de": {
+        "title": "JEV: ähnliche Trefferquote wie GPT-6 Luna, {speed}× schneller und {saving} % günstiger",
+        "sub": "150 synthetische Geschäfts-E-Mails · je 4 Entscheidungen in einem Aufruf "
+               "(Dringlichkeit, Kategorie, Antwort nötig, Phishing) · 2 Durchläufe",
+        "q": "Qualität", "q_note": "alle 4 richtig · 95-%-KI", "pct_tick": "{:.0f} %",
+        "l": "Geschwindigkeit", "l_note": "Median-Antwortzeit · weniger ist besser",
+        "c": "Kosten", "c_note": "$ pro 1.000 E-Mails · Listenpreise",
+        "k": "Konstanz", "k_note": "gleiche Antwort in Lauf 1 und 2",
+        "foot1": "Referenz: Mehrheit aus GPT-6 Sol, Claude Opus 5.5 und Gemini 3.8 Flash. "
+                 "Kosten: gemeldete Tokens × Listenpreise. "
+                 "*Simulation, Schwelle auf denselben Daten gewählt.",
+        "foot2": "**Nicht gemessen: Lunas Tokenverbrauch × Ultrafast-Preise (60/300 $ pro Mio.), "
+                 "ohne Reasoning-Tokens. Code und Daten: {repo}",
+    },
+    "en": {
+        "title": "JEV: similar accuracy to GPT-6 Luna, {speed}× faster and {saving}% cheaper",
+        "sub": "150 synthetic business emails · 4 decisions per email in one call "
+               "(urgency, category, reply needed, phishing) · 2 runs",
+        "q": "Accuracy", "q_note": "all 4 correct · 95% CI", "pct_tick": "{:.0f}%",
+        "l": "Speed", "l_note": "median latency · lower is better",
+        "c": "Cost", "c_note": "$ per 1,000 emails · list prices",
+        "k": "Consistency", "k_note": "same answer in run 1 and 2",
+        "foot1": "Reference: majority vote of GPT-6 Sol, Claude Opus 5.5 and Gemini 3.8 Flash. "
+                 "Cost: reported tokens × list prices. *Simulation, threshold chosen on the same data.",
+        # \\$ statt $: zwei Dollarzeichen in einem Text liest matplotlib sonst als Formel
+        "foot2": "**Not measured: Luna's token usage × Ultrafast prices (\\$60/\\$300 per million), "
+                 "without reasoning tokens. Code and data: {repo}",
+    },
+}
+
+
+def overview(metrics: Mapping[str, object], lang: str = "de") -> Path:
     n = _numbers(metrics)
     quality, ci, latency = n["quality"], n["ci"], n["latency"]
     cost, consistency = n["cost"], n["consistency"]
     assert isinstance(quality, list) and isinstance(ci, list) and isinstance(latency, list)
     assert isinstance(cost, list) and isinstance(consistency, list)
+    tx, num = OVERVIEW_TEXT[lang], (de if lang == "de" else en)
 
     fig = plt.figure(figsize=(12, 7.2), dpi=DPI)
-    fig.text(0.04, 0.945, f"JEV: ähnliche Trefferquote wie GPT-6 Luna, {de(latency[1] / latency[0])}× "
-             f"schneller und {de(100 * (1 - cost[0] / cost[1]))} % günstiger", fontsize=21, fontweight="bold",
-             color=C.INK, va="top")
-    fig.text(0.04, 0.885, "150 synthetische Geschäfts-E-Mails · je 4 Entscheidungen in einem Aufruf "
-             "(Dringlichkeit, Kategorie, Antwort nötig, Phishing) · 2 Durchläufe",
-             fontsize=12, color=C.INK_2, va="top")
+    fig.text(0.04, 0.945, tx["title"].format(speed=num(latency[1] / latency[0]),
+                                             saving=num(100 * (1 - cost[0] / cost[1]))),
+             fontsize=21, fontweight="bold", color=C.INK, va="top")
+    fig.text(0.04, 0.885, tx["sub"], fontsize=12, color=C.INK_2, va="top")
 
     grid = fig.add_gridspec(1, 4, left=0.155, right=0.975, top=0.73, bottom=0.38, wspace=0.42)
     axes = [fig.add_subplot(grid[0, i]) for i in range(4)]
     panels = (
-        Panel("Qualität", "alle 4 richtig · 95-%-KI", quality, [f"{de(v)} %" for v in quality],
-              100, (0, 50, 100), "{:.0f} %", ci),
-        Panel("Geschwindigkeit", "Median-Antwortzeit · weniger ist besser", latency,
-              [f"{de(v)} ms" for v in latency], 1600, (0, 500, 1000, 1500), "{:.0f}"),
-        Panel("Kosten", "$ pro 1.000 E-Mails · Listenpreise", cost, [f"{de(v, 2)} $" for v in cost],
-              3.2, (0, 1, 2, 3), "{:.0f}"),
-        Panel("Konstanz", "gleiche Antwort in Lauf 1 und 2", consistency,
-              [f"{de(v)} %" for v in consistency], 100, (0, 50, 100), "{:.0f} %"),
+        Panel(tx["q"], tx["q_note"], quality, [fmt_pct(v, lang) for v in quality], 100, (0, 50, 100),
+              tx["pct_tick"], ci),
+        Panel(tx["l"], tx["l_note"], latency, [f"{num(v)} ms" for v in latency], 1600, (0, 500, 1000, 1500),
+              "{:.0f}"),
+        Panel(tx["c"], tx["c_note"], cost, [fmt_usd(v, lang) for v in cost], 3.2, (0, 1, 2, 3), "{:.0f}"),
+        Panel(tx["k"], tx["k_note"], consistency, [fmt_pct(v, lang) for v in consistency], 100, (0, 50, 100),
+              tx["pct_tick"]),
     )
     for ax, panel in zip(axes, panels, strict=True):
         _panel(ax, panel)
@@ -203,17 +260,13 @@ def overview(metrics: Mapping[str, object]) -> Path:
     for ax in axes[1:]:
         ax.set_yticks([])
 
-    for i, (text, ink) in enumerate(_findings(n)):
+    for i, (text, ink) in enumerate(_findings(n, lang)):
         fig.text(0.04, 0.285 - 0.05 * i, text, fontsize=12, color=ink, va="top",
                  fontweight="bold" if ink == C.INK else "normal")
-    fig.text(0.04, 0.06, "Referenz: Mehrheit aus GPT-6 Sol, Claude Opus 5.5 und Gemini 3.8 Flash. "
-             "Kosten: gemeldete Tokens × Listenpreise. "
-             "*Simulation, Schwelle auf denselben Daten gewählt.",
-             fontsize=9.5, color=C.MUTED, va="top")
-    fig.text(0.04, 0.03, f"**Nicht gemessen: Lunas Tokenverbrauch × Ultrafast-Preise (60/300 $ pro Mio.), "
-             f"ohne Reasoning-Tokens. Code und Daten: {REPO}", fontsize=9.5, color=C.MUTED, va="top")
+    fig.text(0.04, 0.06, tx["foot1"], fontsize=9.5, color=C.MUTED, va="top")
+    fig.text(0.04, 0.03, tx["foot2"].format(repo=REPO), fontsize=9.5, color=C.MUTED, va="top")
 
-    path = OUT / f"ueberblick{C.suffix}.png"
+    path = OUT / f"ueberblick{'' if lang == 'de' else '-' + lang}{C.suffix}.png"
     fig.savefig(path, dpi=DPI)
     plt.close(fig)
     return path
@@ -235,11 +288,6 @@ def _card_panel(ax: Axes, panel: Panel) -> None:
     ax.text(0, 1.1, panel.title, transform=ax.transAxes, fontsize=31, fontweight="bold", color=C.INK,
             va="bottom")
     ax.text(0, 1.035, panel.note, transform=ax.transAxes, fontsize=19, color=C.MUTED, va="bottom")
-
-
-def en(value: float, digits: int = 0) -> str:
-    """Englische Zahl: 1,234.5"""
-    return f"{value:,.{digits}f}"
 
 
 # Texte der LinkedIn-/X-Grafik; Zahlen werden eingesetzt, nicht eingetippt
@@ -315,8 +363,23 @@ def linkedin_card(metrics: Mapping[str, object], lang: str = "de") -> Path:
     return path
 
 
-def hybrid_chart(metrics: Mapping[str, object]) -> Path:
+HYBRID_TEXT: dict[str, dict[str, str]] = {
+    "de": {"x": "Anteil der E-Mails, die an das zweite Modell weitergeleitet werden (%)",
+           "y": "Alle 4 Entscheidungen richtig (%)",
+           "title": "Hybrid: JEV entscheidet, bei Unsicherheit entscheidet ein LLM",
+           "sub": "Links nur JEV, rechts nur das zweite Modell · 150 synthetische Geschäfts-E-Mails, "
+                  "Lauf 1 · Schwelle auf denselben Daten gewählt"},
+    "en": {"x": "Share of emails forwarded to the second model (%)",
+           "y": "All 4 decisions correct (%)",
+           "title": "Hybrid: JEV decides, an LLM steps in when JEV is unsure",
+           "sub": "Left: JEV only, right: second model only · 150 synthetic business emails, "
+                  "run 1 · threshold chosen on the same data"},
+}
+
+
+def hybrid_chart(metrics: Mapping[str, object], lang: str = "de") -> Path:
     syn = metrics["datensaetze"]["synthetisch"]  # type: ignore[index]
+    num = de if lang == "de" else en
     fig, ax = plt.subplots(figsize=(10, 6), dpi=DPI)
     fig.subplots_adjust(left=0.1, right=0.8, top=0.8, bottom=0.14)
     for fallback, label, ink in (("gpt-6-luna", "JEV → GPT-6 Luna", C.ACCENT),
@@ -329,8 +392,12 @@ def hybrid_chart(metrics: Mapping[str, object]) -> Path:
         ax.text(xs[-1] + 1.5, ys[-1], label, va="center", fontsize=12, color=C.INK)
     best = max(syn["hybrid"]["gpt-6-luna"], key=lambda h: h["genauigkeit"]["alle_vier"])
     bx, by = 100 * best["eskaliert"], 100 * best["genauigkeit"]["alle_vier"]
-    note = (f"{de(by)} % bei {de(bx)} % Weiterleitung\n"
-            f"{de(best['kosten_pro_1000_usd'], 2)} $ pro 1.000 · Ø {de(best['latenz_mittel_ms'])} ms")
+    if lang == "en":
+        note = (f"{num(by)}% at {num(bx)}% forwarded\n"
+                f"${num(best['kosten_pro_1000_usd'], 2)} per 1,000 · avg {num(best['latenz_mittel_ms'])} ms")
+    else:
+        note = (f"{num(by)} % bei {num(bx)} % Weiterleitung\n"
+                f"{num(best['kosten_pro_1000_usd'], 2)} $ pro 1.000 · Ø {num(best['latenz_mittel_ms'])} ms")
     ax.annotate(note, (bx, by), xytext=(bx + 8, by + 5), fontsize=11,
                 color=C.INK, arrowprops={"arrowstyle": "-", "color": C.MUTED, "linewidth": 1})
     for side in ("top", "right"):
@@ -339,13 +406,12 @@ def hybrid_chart(metrics: Mapping[str, object]) -> Path:
     ax.set_axisbelow(True)
     ax.set_xlim(-2, 102)
     ax.set_ylim(40, 85)
-    ax.set_xlabel("Anteil der E-Mails, die an das zweite Modell weitergeleitet werden (%)")
-    ax.set_ylabel("Alle 4 Entscheidungen richtig (%)")
-    fig.text(0.1, 0.94, "Hybrid: JEV entscheidet, bei Unsicherheit entscheidet ein LLM",
-             fontsize=17, fontweight="bold", color=C.INK, va="top")
-    fig.text(0.1, 0.885, "Links nur JEV, rechts nur das zweite Modell · 150 synthetische Geschäfts-E-Mails, "
-             "Lauf 1 · Schwelle auf denselben Daten gewählt", fontsize=11, color=C.INK_2, va="top")
-    path = OUT / f"hybrid{C.suffix}.png"
+    tx = HYBRID_TEXT[lang]
+    ax.set_xlabel(tx["x"])
+    ax.set_ylabel(tx["y"])
+    fig.text(0.1, 0.94, tx["title"], fontsize=17, fontweight="bold", color=C.INK, va="top")
+    fig.text(0.1, 0.885, tx["sub"], fontsize=11, color=C.INK_2, va="top")
+    path = OUT / f"hybrid{'' if lang == 'de' else '-' + lang}{C.suffix}.png"
     fig.savefig(path, dpi=DPI)
     plt.close(fig)
     return path
@@ -393,6 +459,8 @@ def main() -> int:
     for theme in THEMES:
         apply_theme(theme)
         paths = [overview(metrics), hybrid_chart(metrics)]
+        if theme == "dunkel":
+            paths += [overview(metrics, "en"), hybrid_chart(metrics, "en")]  # englischer Blog-Artikel
         paths.append(linkedin_card(metrics))  # hell für LinkedIn, dunkel für die Artikelkarte im Blog
         if theme == "hell":
             paths.append(linkedin_card(metrics, "en"))  # für X

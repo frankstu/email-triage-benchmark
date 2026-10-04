@@ -1,5 +1,18 @@
 # JEV Mail Benchmark
 
+> **English summary.** An independent benchmark of TypeSafe's decision model JEV 1.13 against
+> GPT-6 Luna and Claude Haiku 4.5: four decisions per email (urgency, category, reply needed,
+> phishing) in one call, on 150 synthetic business emails (mostly German) and 300 pseudonymized
+> private emails, two runs each. On the business emails JEV reached similar accuracy to Luna
+> (65% vs 64% all four decisions correct, McNemar p = 1.0), with a 4× lower median latency
+> (257 ms vs 1,031 ms), about 47% lower cost and the most consistent answers (97%). Reference
+> labels are a majority vote of GPT-6 Sol, Claude Opus 5.5 and Gemini 3.8 Flash, which also wrote
+> the synthetic emails. Write-up with all limits:
+> [frankstuch.de/en/articles/jev-hands-on](https://frankstuch.de/en/articles/jev-hands-on/).
+> Results: [`results/summary.md`](results/summary.md), [`results/metrics.json`](results/metrics.json);
+> raw synthetic data and every model answer: [`data/synthetic/`](data/synthetic/).
+> The rest of this README is in German.
+
 Vergleich von JEV (TypeSafe AI) mit LLMs bei der Klassifizierung von E-Mails:
 Qualität, Latenz, Kosten. Pro E-Mail vier Entscheidungen in einem Aufruf –
 Dringlichkeit, Kategorie, Antwort nötig, Phishing-Verdacht (siehe `src/jev_bench/schema.py`).
